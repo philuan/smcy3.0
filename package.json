@@ -1,7 +1,7 @@
 {
   "name": "smcy3.0",
-  "version": "1.0.0",
-  "description": "A Vue.js project",
+  "version": "3.0.0",
+  "description": "化验无忧3.0",
   "author": "philuan",
   "private": true,
   "scripts": {
