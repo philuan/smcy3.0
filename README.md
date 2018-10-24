@@ -1,6 +1,6 @@
 # smcy3.0
 
-> A Vue.js project
+> 化验无忧3.0
 
 ## Build Setup
 
