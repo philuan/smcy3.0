@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <p></p>
+    <p>化验无忧3.0</p>
     <span>{{dateCurrent | dateFormat}}</span>
   </div>
 </template>
