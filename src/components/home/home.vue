@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <p>就是这么吊</p>
+    <p></p>
     <span>{{dateCurrent | dateFormat}}</span>
   </div>
 </template>
