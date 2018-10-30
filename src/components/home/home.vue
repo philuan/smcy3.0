@@ -46,14 +46,14 @@ export default {
 }
 </script>
 
-<style scoped lang='less'>
+<style scoped lang='scss'>
   *{
     margin: 0;
     padding: 0;
   }
   .home{
     background: aqua;
-    width: 7.5rem;
+    width: 100%;
     height: 300px;
     p{
       width: 100%;
@@ -63,7 +63,7 @@ export default {
       line-height: 60px;
     }
     span{
-      font-size: .18rem;
+      font-size: 18px;
     }
   }
 </style>
