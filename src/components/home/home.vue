@@ -40,8 +40,8 @@ export default {
     }
   },
   mounted () {
-    this.getReportReminding()
-    // console.log(this.$store.state.show)
+    // this.getReportReminding()
+    console.log(this.$store.state.show)
   }
 }
 </script>

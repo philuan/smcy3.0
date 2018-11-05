@@ -7,6 +7,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 Vue.config.productionTip = false
+router.beforeEach((to, from, next) => {
+  console.log(to)
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
