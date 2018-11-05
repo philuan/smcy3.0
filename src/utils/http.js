@@ -14,10 +14,10 @@ axios.interceptors.request.use(config => {
   if (token) {
     if (!config.params) {
       config.params = {
-        yjtShareToken: token
+        token: token
       }
     } else {
-      config.params.yjtShareToken = token
+      config.params.token = token
     }
   }
   return config
