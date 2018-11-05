@@ -1,7 +1,5 @@
 <template>
   <div class="home">
-    <p>化验无忧3.0</p>
-    <p>ceshi</p>
     <span>{{dateCurrent | dateFormat}}</span>
   </div>
 </template>
@@ -10,7 +8,7 @@
 import api from '../../utils/api'
 import dayjs from 'dayjs'
 export default {
-  name: 'home',
+  name: 'Home',
   data () {
     return {
       reportInfo: {
