@@ -61,7 +61,7 @@ export default {
       line-height: 60px;
     }
     span{
-      font-size: 18px;
+      font-size: 18px;/*px*/
     }
   }
 </style>

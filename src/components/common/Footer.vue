@@ -72,6 +72,7 @@ export default {
     bottom: 0;
     left: 0;
     padding-top: 15px;
+    box-shadow:0px -2px 3px 0px rgba(0, 0, 0, 0.1);
     .footer_column{
       width: 100%;
       height: 100%;
@@ -84,7 +85,7 @@ export default {
           margin: 0 auto;
         }
         span{
-          font-size: 22px;
+          font-size: $font22;
           color: #444444;
         }
         .active{
