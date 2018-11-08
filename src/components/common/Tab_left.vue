@@ -39,13 +39,13 @@ export default {
         height: 90px;
         p{
           width: 100px;
-          height: 100%;
+          height: 89px;
           margin: 0 auto;
-          line-height: 90px;
+          line-height: 89px;
           color: #777;
           text-align: center;
           font-size: $font28;
-          border-bottom: 1px solid rgba(238,238,238,1);
+          border-bottom: 1px solid rgba(238,238,238,1);/*no*/
         }
       }
       .active{
@@ -56,6 +56,9 @@ export default {
         p{
           font-size: $font34;
           color: #ffffff;
+          height: 90px;
+          line-height: 90px;
+          border-bottom: none;
         }
       }
     }
