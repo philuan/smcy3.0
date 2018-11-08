@@ -17,7 +17,7 @@ export default {
   name: 'Footer',
   data () {
     return {
-      isSelect: 'Home',
+      isSelect: sessionStorage.getItem('smcyPathName') || 'Home', // 在导航守卫中设置了该路由名称，以便初始化
       nav: [
         {
           'title': '首页',
@@ -54,9 +54,12 @@ export default {
   },
   methods: {
     selectNav (name) {
-      this.isSelect = name
+      this.isSelect = name // 双重设置，保证isSelect确切有值
       this.$router.push('/' + name.toLowerCase())
     }
+  },
+  mounted () {
+    this.selectNav(this.isSelect)
   }
 }
 </script>
