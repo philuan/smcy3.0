@@ -63,6 +63,7 @@ export default {
 
 <style scoped lang='scss'>
   .footer_nav{
+    background: #fff;
     width: 100%;
     height: 83px;
     display: flex;
