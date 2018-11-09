@@ -71,7 +71,23 @@ export default {
 
 <style scoped lang='scss'>
   .home{
+<<<<<<< HEAD
     max-width: 1536px;
     margin: 0 auto;
+=======
+    background: aqua;
+    width: 100%;
+    height: 300px;
+    p{
+      width: 100%;
+      height: 60px;
+      text-align: center;
+      background: red;
+      line-height: 60px;
+    }
+    span{
+      font-size: 18px;/*px*/
+    }
+>>>>>>> d253f95101e36a742b57b984c32212e8dd28d340
   }
 </style>
