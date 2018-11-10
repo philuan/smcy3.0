@@ -125,7 +125,7 @@ export default {
         justify-content: space-between;
         p{
           color: #ffffff;
-          width: 127px;
+          width: 140px;
           span{
             display: inline-block;
           }
