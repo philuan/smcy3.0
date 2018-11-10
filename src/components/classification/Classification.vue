@@ -107,6 +107,12 @@ export default {
     changeInd (ind) {
       console.log(ind)
       this.isSelect = ind // 接受子组件传递过来的参数
+      sessionStorage.setItem('tab_left_ind', ind)
+    }
+  },
+  mounted () {
+    if (sessionStorage.getItem('tab_left_ind')) {
+      this.isSelect = sessionStorage.getItem('tab_left_ind')
     }
   }
 }
