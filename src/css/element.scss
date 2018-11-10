@@ -1,0 +1,56 @@
+@import "./layout.scss";
+
+@mixin btn($size:26px,$color:#fff,$bgcolor:#E8641B,$paddingLR:35px,$paddingTB:17px,$radius:15px,$bg:#fff) {
+    padding: $paddingTB $paddingLR;
+    background-color: $bgcolor;
+    border-radius: $radius;
+    border: 1px solid $bg;
+    font-size: $size;
+    color: $color;
+    text-align: center;
+    line-height: 1;
+    display: inline-block;
+}
+
+@mixin list($direction:column) {
+    @include flex($direction);
+}
+
+@mixin panel($bgcolor:#fff,$padding:0,$margin:0,$height:80px,$txtPadding:0 32px,$color:#1FB0E7,$fontSize:32px,$direction:row,$mColor:#aaa,$mFontsize:22px) {
+    background: $bgcolor;
+    padding: $padding;
+    margin: $margin;
+    >div{
+        position: relative;
+        height: $height;
+        line-height: $height;
+        padding: $txtPadding;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        text-align: left;
+        color: $color;
+        font-size: $fontSize;
+        font-weight: bold;
+        @include flex($direction);
+        justify-content: space-between;
+        p{
+            color: $mColor;
+            font-size: $mFontsize;
+            &:after{
+                content: " ";
+                display: inline-block;
+                height: 12px;
+                width: 12px;
+                border-width: 3px 3px 0 0;
+                border-color: #aaa;
+                border-style: solid;
+                transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+                position: absolute;
+                top: 50%;
+                margin-top: -8px;
+                right: 15px;
+            }
+        }
+    }
+}

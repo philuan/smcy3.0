@@ -1,14 +1,39 @@
 <template>
   <div class="home">
-    <span>{{dateCurrent | dateFormat}}</span>
+    <search/>
+    <slider/>
+    <hot-ad/>
+    <packaged/>
+    <hot/>
+    <special/>
+    <routine-ad/>
+    <routine/>
   </div>
 </template>
 
 <script>
 import api from '../../utils/api'
 import dayjs from 'dayjs'
+import search from './Hsearch'
+import slider from './Hslider'
+import packaged from './Hpackage'
+import hot from './Hot'
+import special from './Special'
+import HotAd from './HotAd'
+import Routine from './Routine'
+import RoutineAd from './RoutineAd'
 export default {
   name: 'Home',
+  components: {
+    search,
+    slider,
+    HotAd,
+    packaged,
+    hot,
+    special,
+    Routine,
+    RoutineAd
+  },
   data () {
     return {
       reportInfo: {
@@ -45,23 +70,5 @@ export default {
 </script>
 
 <style scoped lang='scss'>
-  *{
-    margin: 0;
-    padding: 0;
-  }
-  .home{
-    background: aqua;
-    width: 100%;
-    height: 300px;
-    p{
-      width: 100%;
-      height: 60px;
-      text-align: center;
-      background: red;
-      line-height: 60px;
-    }
-    span{
-      font-size: 18px;/*px*/
-    }
-  }
+
 </style>
