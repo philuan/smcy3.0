@@ -178,7 +178,7 @@ export default {
     }
     .list{
       padding: 0;
-      background: F1F1F1;
+      background: #F1F1F1;
       .red_envelopes{
         width: 100%;
         height: 129px;
