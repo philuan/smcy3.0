@@ -70,5 +70,7 @@ export default {
 </script>
 
 <style scoped lang='scss'>
-
+  .home{
+    background: #fff;
+  }
 </style>

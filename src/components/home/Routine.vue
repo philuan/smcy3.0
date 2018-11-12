@@ -70,6 +70,7 @@ export default {
 </script>
 <style lang="scss" scoped>
   .routine{
+    overflow: hidden;
     padding: 10px 30px;
     margin-bottom: 100px;
     text-align: left;

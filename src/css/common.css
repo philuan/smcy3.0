@@ -37,3 +37,6 @@ blockquote:before, blockquote:after, q:before, q:after { content: ''; content: n
 /*清除浮动*/
 .clearfix { clear: both; *zoom:1;}
 .clearfix:after { display: block; clear: both; content: "\0020"; visibility: hidden; height: 0; }
+html, body{
+	height: 100%;
+}
