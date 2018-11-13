@@ -154,7 +154,7 @@ export default {
 @import "../../css/element.scss";
 .shopping{
   height: calc(100Vh - 100px);
-  background: #EDF0F2;
+  background: #f1f1f1;
   .shopping_list{
     background: #fff;
     @include list(column);

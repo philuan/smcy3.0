@@ -6,6 +6,7 @@ const Shopping = () => import('@/components/shopping/Shopping')
 const Order = () => import('@/components/order/Order')
 const Mine = () => import('@/components/mine/Mine')
 const Footer = () => import('@/components/common/Footer')
+const Message = () => import('@/components/home/Message')
 Vue.use(Router)
 // meta下边的roleCode通过状态值跟后端匹配，判断用户访问权限, 暂时权限code对应信息还没定
 export default new Router({
@@ -60,6 +61,14 @@ export default new Router({
       component: Footer,
       meta: {
         roleCode: 5
+      }
+    },
+    {
+      path: '/message',
+      name: 'Message',
+      component: Message,
+      meta: {
+        roleCode: 1
       }
     }
   ]
