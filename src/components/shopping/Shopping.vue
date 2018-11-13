@@ -1,8 +1,9 @@
 <template>
   <div class="shopping">
     <div class="shopping_list">
-      <div class="item" v-for="item in cartList" :key="item.id">
-        <div class="select" @click="selectProject($event)"></div>
+      <div class="item" v-for="(item,index) in list" :key="item.id">
+        <input class="select" type="checkbox" :value="item.id" v-model="checkBoxModel" @click.stop="checkOne(index),checkPick()">
+        <!-- <div class="select" @click="selectProject($event, item)"></div> -->
         <img class="label_img" :src="require(`@/assets/shopping_img/${item.img}`)" alt="">
         <div class="des">
           <div>
@@ -23,14 +24,15 @@
     </div>
     <div class="shopping_count">
       <div class="select_box">
-        <div class="select" @click="selectAll"></div>
+        <input class="select" type="checkbox" @click="checkAll(),checkModel()" v-model="allp">
+        <!-- <div class="select" @click="selectAll"></div> -->
         <span>全选</span>
       </div>
       <div class="count_box">
         <span class="count_label">合计：</span>
-        <span class="count_price">¥212.00</span>
+        <span class="count_price">¥{{ totalPrice }}</span>
       </div>
-      <div class="checkout_btn">去结算(1)</div>
+      <div class="checkout_btn">去结算({{ checkBoxModel.length }})</div>
     </div>
   </div>
 </template>
@@ -40,13 +42,15 @@ export default {
   name: 'Shopping',
   data () {
     return {
-      cartList: [
+      list: [
         {
           'id': '1',
           'p_name': '血常规',
           'h_name': '西京医院',
           'cycle': '1-2d',
           'price': '212.00',
+          'count': 1,
+          'isBuy': false,
           'img': 'p_img.png'
         },
         {
@@ -55,39 +59,98 @@ export default {
           'h_name': '唐都医院',
           'cycle': '1-2d',
           'price': '128.00',
+          'count': 1,
+          'isBuy': false,
           'img': 'p_img.png'
         },
         {
           'id': '3',
-          'p_name': '肝脏五香',
+          'p_name': '肝脏五项',
           'h_name': '一附院',
           'cycle': '1-2d',
           'price': '318.00',
+          'count': 1,
+          'isBuy': false,
           'img': 'p_img.png'
         }
-      ]
+      ],
+      checkBoxModel: [],
+      allp: false
+    }
+  },
+  computed: {
+    totalPrice () {
+      var total = 0
+      for (var i = 0; i < this.list.length; i++) {
+        if (this.list[i].isBuy) {
+          var item = this.list[i]
+          total += item.price * item.count
+        }
+      }
+      return total.toString().replace(/\B(?=(\d{3})+$)/g, ',')
     }
   },
   methods: {
-    selectProject (e) {
-      if (e.target.className.indexOf('selected') === -1) {
-        e.target.className = 'select selected'
+    // 单选的实现依靠的是isBuy通过click的切换实现
+    checkOne (index) {
+      if (this.list[index].isBuy) {
+        this.list[index].isBuy = false
       } else {
-        e.target.className = 'select'
+        this.list[index].isBuy = true
       }
     },
-    selectAll (e) {
-      if (e.target.className.indexOf('selected') === -1) {
-        e.target.className = 'select selected'
+    // 单选商品数量等于商品列表数量时，全选按钮打钩
+    checkPick () {
+      var _this = this
+      var sumPic = 0
+      for (var i = 0; i < _this.list.length; i++) {
+        if (_this.list[i].isBuy) {
+          sumPic++
+        }
+      }
+      if (sumPic === _this.list.length) {
+        _this.allp = true
       } else {
-        e.target.className = 'select'
+        _this.allp = false
+      }
+    },
+    // 全选
+    checkAll () {
+      var _this = this
+      if (_this.allp) {
+        _this.checkBoxModel = []
+        _this.allp = false
+      } else {
+        _this.checkBoxModel = []
+        _this.list.forEach(function (item) {
+          _this.checkBoxModel.push(item.id)
+        })
+        _this.allp = true
+      }
+      // 全选的实现通过checkBoxModel的状态
+    },
+    // 利用checkBoxModel的绑定的状态来分别给每个物品确认isBuy的状态，避免与checkOne的冲突
+    checkModel () {
+      var _this = this
+      var newArr = []
+      if (_this.checkBoxModel.length) {
+        newArr = _this.checkBoxModel.concat()
+        for (let i = 0; i < _this.checkBoxModel.length; i++) {
+          var newone = newArr.shift().toString()
+          _this.list[newone - 1].isBuy = true
+        }
+      } else {
+        newArr = _this.checkBoxModel.concat()
+        for (let i = 0; i < _this.list.length; i++) {
+          _this.list[i].isBuy = false
+        }
       }
     }
   }
 }
 </script>
 
-<style scoped lang='scss' >
+<style scoped lang='scss'>
 @import "../../css/element.scss";
 .shopping{
   height: calc(100Vh - 100px);
@@ -104,8 +167,6 @@ export default {
         height: 32px;
         margin: 50px 30px 80px 0;
         float: left;
-        background: url("../../assets/shopping_img/select.png")no-repeat;
-        background-size: cover;
       }
       .selected{
         background: url("../../assets/shopping_img/selected.png")no-repeat;
@@ -182,8 +243,6 @@ export default {
         margin-right: 16px;
         float: left;
         margin-top: 14px;
-        background: url("../../assets/shopping_img/select.png")no-repeat;
-        background-size: cover;
       }
       .selected{
         background: url("../../assets/shopping_img/selected.png")no-repeat;
