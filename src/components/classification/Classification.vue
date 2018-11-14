@@ -105,7 +105,6 @@ export default {
   methods: {
     // 触发子组件的方法
     changeInd (ind) {
-      console.log(ind)
       this.isSelect = ind // 接受子组件传递过来的参数
       sessionStorage.setItem('tab_left_ind', ind)
     }
