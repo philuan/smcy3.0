@@ -1,0 +1,85 @@
+.picker-slot{
+  font-size: 30px !important;
+}
+.picker-toolbar{
+  height: 60px;
+}
+.mint-datetime-action{
+  line-height: 60px;
+  font-size: 32px;
+}
+/*mint-msgbox样式部分覆盖开始*/
+.mint-msgbox{
+  width: 66%;
+  height: 200px;
+  font-size: 26px;
+}
+.mint-msgbox-title{
+  font-size: 30px;
+}
+.mint-msgbox-message{
+  line-height: 60px;
+}
+.mint-msgbox-btns{
+  height: 60px;
+  line-height: 60px;
+}
+/*mint-msgbox样式部分覆盖结束*/
+.mint-toast-text{
+  font-size: 26px;
+  padding: 5px 10px;
+  word-spacing: 1px;
+}
+/*选择器*/
+.picker{
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: #ffffff;
+}
+.picker-slot-center{
+  width: 100%;
+}
+.picker-items{
+  height:100%;
+}
+.picker-item{
+  width: 100%;
+  height: 40px;
+  font-size: 30px;
+}
+.picker-slot-center{
+  height:100%;
+}
+.picker-slot-wrapper{
+}
+.picker-center-highlight{
+  background-color: #F5F5F9;
+  z-index:-100;
+}
+.picker-item.picker-selected{
+  width: 100%;
+  height: 46px;
+  position: relative;
+}
+.picker-item.picker-selected:before{
+  width: 100%;
+  position: absolute;
+  top: -26px;
+  left: 0;
+  content: '';
+  height: 200%;
+  border-top: 1px solid #aaaaaa;
+  transform: scaleY(.5);
+}
+.picker-item.picker-selected:after{
+  width: 100%;
+  position: absolute;
+  bottom: -23px;
+  left: 0;
+  content: '';
+  height: 200%;
+  border-bottom: 1px solid #aaaaaa;
+  transform: scaleY(.5);
+}

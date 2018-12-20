@@ -5,37 +5,36 @@
     </div>
     <div class="info_list">
       <!--订单号列表-->
-      <div v-for="(itemOuter, ind) in outerData" :key="ind" class="order_num_list">
+      <div v-for="(itemRecords, ind) in records" :key="ind" class="order_num_list">
         <div class="order_num_container">
           <!--订单号头部信息-->
           <div class="info_header">
-            <span class="order_num">订单号：20180723-12326544</span>
-            <span :class="state_payment">代付款</span>
+            <span class="order_num">订单号：{{itemRecords.order.orderNo}}</span>
+            <span :class="state_payment">{{itemRecords.order.payStatus}}</span>
           </div>
           <!--该订单号下边的检查项目列表-->
-          <ul>
-            <li v-for="(itemInner, ind) in itemOuter.innerData" :key="ind">
-              <img src="../../../static/images/20181108155159.png" alt="">
+          <ul @click="goOrderDetail(itemRecords.order.uuid, itemRecords.order.orderStatus)">
+            <li v-for="(itemInner, ind) in itemRecords.projectList" :key="ind">
+              <img v-lazy="staticUrl + itemInner.image" alt="">
               <div class="check">
-                <p class="check_name">血常规</p>
-                <p class="check_hospital">西京医院</p>
+                <p class="check_name">{{itemInner.name}}</p>
+                <p class="check_hospital">{{itemInner.hospital}}</p>
               </div>
               <div class="cycle_cost">
-                <p class="cycle">周期：<span>1-2d</span></p>
-                <p class="cost">¥212.00</p>
+                <p class="cycle">周期：<span>{{itemInner.period}}</span></p>
+                <p class="cost">¥{{itemInner.nowPrice}}</p>
               </div>
             </li>
           </ul>
-          <!--就医人姓名和该订单下的总消费金额-->
+          <!--就医人姓名和该订单下的总消费金额 就医人字段{{itemRecords.order.patient}}-->
           <div class="order_num_info">
-            <p class="jyr">就医人：张某某</p>
-            <p class="total">共计2件商品，总金额<span>¥424.00</span></p>
+            <p class="jyr">就医人：{{itemRecords.patient.name}}</p>
+            <p class="total">共计{{itemRecords.projectList.length}}件商品，总金额&nbsp;<span>¥{{itemRecords.order.price}}</span></p>
           </div>
         </div>
-        <div class="del_again_pay">
-          <img :src="delIcin" >
-          <button class="pay_again">再次购买</button>
-          <button class="pay_state">去付款</button>
+        <div class="del_again_pay" v-show="itemRecords.order.isShowOrderBot">
+          <!--<button class="pay_again">再次购买</button>-->
+          <button :class="[itemRecords.order.orderStatus === '2' ? 'blue' : '', 'pay_state']" @click="goDetail(itemRecords.order.uuid, itemRecords.order.orderStatus)">{{itemRecords.order.payName}}</button>
         </div>
       </div>
       <!--一个列表完-->
@@ -44,37 +43,137 @@
 </template>
 
 <script>
+import api from '../../utils/api'
+import { config } from '../../config/config'
 export default {
   name: 'Order',
   data () {
     return {
-      tabData: ['全部', '代付款', '待预约', '进行中', '已完成', '待评价'],
+      staticUrl: config.static_url, // 配置图片url
+      tabData: ['全部', '待付款', '待预约', '进行中', '待评价'],
       isSelect: 0,
+      pageSize: 10,
+      pageNo: 1,
+      pageTotal: 1,
+      orderStatus: '1',
       state_payment: 'fkq', // 此处分为付款前和付款后，名称用首字母组合
-      outerData: [
+      successObject: {},
+      records: [
         {
-          innerData: [
-            {
-              'key': 1
-            },
-            {
-              'key': 2
-            }
-          ]
-        },
-        {
-          innerData: {
-            'key': 2
-          }
+          projectList: [],
+          order: {}
         }
       ],
-      delIcin: require('../../assets/del.png')
+      hospitalList: this.common.getStorage('hospitalList')
     }
   },
   methods: {
     changeTab (ind) {
       this.isSelect = ind
+      if (ind === 0) {
+        this.orderStatus = ''
+      } else {
+        this.orderStatus = String(ind)
+      }
+      this.getOrderList()
+    },
+    goOrderDetail (uuid, status) {
+      if (status === '1') {
+        this.$router.push({path: '/orderdetail', query: { uuid: uuid, status: status }})
+      } else {
+        this.$router.push({path: '/appointmentconfirm', query: { uuid: uuid, status: status }})
+      }
+    },
+    getOrderList () {
+      let params = {
+        pageSize: this.pageSize,
+        pageNo: this.pageNo,
+        orderStatus: this.orderStatus
+      }
+      api.getOrderList(params).then(res => {
+        if (res.data.code === 200) {
+          let { successObject } = res.data
+          let { records } = successObject
+          records.forEach(function (value, ind) {
+            // isShowOrderBot用来判断是否显示底部按钮
+            if (value.order.orderStatus === '1') {
+              // 状态为1的时候表示代付款
+              value.order['payStatus'] = '待付款'
+              value.order.payName = '去付款'
+              value.order.isShowOrderBot = true
+            } else if (value.order.orderStatus === '2') {
+              value.order.payStatus = '待预约'
+              value.order.payName = '去预约'
+              value.order.isShowOrderBot = true
+            } else if (value.order.orderStatus === '3') {
+              value.order.payStatus = '进行中'
+              value.order.payName = ''
+              value.order.isShowOrderBot = false
+            } else if (value.order.orderStatus === '4') {
+              value.order.payStatus = '待评价'
+              value.order.payName = ''
+              value.order.isShowOrderBot = false
+            }
+          })
+          this.records = records
+          this.pageTotal = successObject.pages
+        }
+      })
+    },
+    goDetail (uuid, status) {
+      // status是点击时候传过来的 1代表去付款   2代表去预约   其他数字暂时不显示按钮
+      if (status === '1') {
+        this.getOrderDetail(uuid)
+      } else { //  跳转到其他状态 例如预约页面
+        this.$router.push({path: '/appointmentconfirm', query: { uuid: uuid, status: status }})
+      }
+    },
+    // 获取订单信息
+    getOrderDetail (uuid) {
+      let params = {
+        uuid: uuid
+      }
+      api.getOrderDetail(params).then(res => {
+        if (res.data.code === 200) {
+          let projectList = res.data.successObject.projectList
+          // 根据医院id匹配医院名称
+          for (let i in projectList) {
+            for (let j in this.hospitalList) {
+              if (projectList[i].hospital === this.hospitalList[j].uuid) {
+                projectList[i].hospitalName = this.hospitalList[j].name
+                projectList[i].hospitalLogo = this.hospitalList[j].logo
+                break
+              }
+            }
+          }
+
+          let orderInfo = {
+            userRemark: res.data.successObject.order.userRemark, // 用户备注
+            scope: res.data.successObject.order.scope, // 服务位置 0:三环内, 1:三环外
+            reportNeed: res.data.successObject.order.paperReport, // 纸质报告 0:不需要, 1:需要
+            notes: res.data.successObject.order.notes, // 注意事项
+            serviceCharge: res.data.successObject.order.servicePrice, // 服务费
+            couponPrice: res.data.successObject.order.couponPrice, // 优惠金额
+            price: res.data.successObject.order.price, // 订单金额
+            uuid: res.data.successObject.order.uuid // 订单uuid
+          }
+          let orderConfirmInfo = {
+            'totalPrice': res.data.successObject.order.projectPrice, // 项目金额
+            'orderConfirmList': res.data.successObject.projectList, // 项目列表
+            'projectNumber': res.data.successObject.order.projectCount, // 项目数量
+            'patientInfo': res.data.successObject.patient, // 患者信息
+            'orderInfo': orderInfo // 订单信息
+          }
+          this.common.setStorage('orderConfirmInfo', orderConfirmInfo)
+          this.$router.push({ path: '/orderconfirm' })
+        }
+      }).catch(res => {
+        console.log(res)
+      })
     }
+  },
+  mounted () {
+    this.getOrderList()
   }
 }
 </script>
@@ -108,12 +207,14 @@ export default {
       }
       p.active{
         color: #1FB0E7;
+        font-size: $font26;
         border-bottom: 2px solid #1FB0E7;/*no*/
       }
     }
     .info_list{
       width: 100%;
       margin-top: 10px;
+      margin-bottom: 90px;
       height: auto;
       .order_num_list{
         margin: 0 auto 10px;
@@ -189,8 +290,8 @@ export default {
                   }
                 }
                 .cost{
-                  margin-top: 50px;
-                  font-size: $font18;
+                  margin-top: 40px;
+                  font-size: $font24;
                   color: #FFC000;
                 }
               }
@@ -239,10 +340,14 @@ export default {
           color: #777777;
         }
         .pay_state{
+          margin-left: auto;
           margin-right: 30px;
           background: #FC9968;
           border: none;
           color: #ffffff;
+        }
+        .blue{
+          background:linear-gradient(-30deg,rgba(31,176,231,1) 0%,rgba(54,200,255,1) 100%);
         }
       }
     }

@@ -1,25 +1,35 @@
 <template lang="html">
-  <panel title="广告">
+  <panel :moreInfo="moreInfo">
     <section class="content">
-      <router-link :to="{ name: 'home'}">
-        <img src="@/assets/home_img/love.png" alt="">
-      </router-link>
+      <img v-lazy="staticUrl + item.image" alt="" />
     </section>
   </panel>
 </template>
 <script>
+import {config} from '../../config/config'
 import panel from '../../core/panel.vue'
 export default {
+  props: {
+    item: {
+      type: Object,
+      default () {
+        return {}
+      }
+    }
+  },
   components: {
     panel
   },
   data () {
     return {
-
+      staticUrl: config.static_url,
+      moreInfo: {
+        classifyHome: {
+          'name': '广告',
+          'uuid': '-1'
+        }
+      }
     }
-  },
-  methods: {
-
   }
 }
 </script>

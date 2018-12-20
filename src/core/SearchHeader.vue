@@ -1,28 +1,58 @@
 <template lang="html">
   <div class="search">
-      <i class="iconfont back">&#xe61c;</i>
-      <div class="seachBox">
-        <i class="iconfont search_lable_btn">&#xe6a8;</i>
-        <input type="text" placeholder="请输入项目名称/医院名称">
-        <i class="iconfont del_btn" v-show="show">&#xe611;</i>
-      </div>
-      <div class="search_btn">搜索</div>
-
+    <i class="iconfont back" @click="back">&#xe61c;</i>
+    <div class="seachBox">
+      <i class="iconfont search_lable_btn">&#xe6a8;</i>
+      <input type="text" placeholder="请输入项目名称/医院名称" id="keywords" v-model="key" v-on="{compositionstart: start, compositionend: end, input: input }">
+      <i class="iconfont del_btn" v-show="show" @click="deleteKeywords">&#xe611;</i>
+    </div>
+    <div class="search_btn" @click="search">搜索</div>
   </div>
 </template>
 <script>
 export default {
-  props: [],
-  components: {
-
+  props: {
+    keyWords: {
+      type: String
+    }
   },
   data () {
     return {
-      show: false
+      show: false,
+      key: this.keyWords,
+      cpLock: false
     }
   },
   methods: {
-
+    search () {
+      if (this.key) {
+        this.$emit('change', this.key)
+      }
+    },
+    start () {
+      this.cpLock = true
+    },
+    end () {
+      this.cpLock = false
+    },
+    input () {
+      if (!this.cpLock) {
+        if (this.key) {
+          this.show = true
+          this.$emit('change', this.key)
+        } else {
+          this.show = false
+        }
+      }
+    },
+    back () {
+      this.$emit('backPage')
+    },
+    deleteKeywords () {
+      this.key = ''
+      this.show = false
+      this.$emit('change', this.key)
+    }
   }
 }
 </script>
@@ -34,6 +64,7 @@ export default {
     min-height: 88px;
     width: 100%;
     background: #fff;
+    border-bottom: 1px solid #f1f1f1;
     .back{
       position: absolute;
       left: 25px;
