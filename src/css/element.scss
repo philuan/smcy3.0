@@ -37,20 +37,6 @@
         p{
             color: $mColor;
             font-size: $mFontsize;
-            &:after{
-                content: " ";
-                display: inline-block;
-                height: 12px;
-                width: 12px;
-                border-width: 3px 3px 0 0;
-                border-color: #aaa;
-                border-style: solid;
-                transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
-                position: absolute;
-                top: 50%;
-                margin-top: -8px;
-                right: 15px;
-            }
         }
     }
 }

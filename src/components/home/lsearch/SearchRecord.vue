@@ -1,13 +1,12 @@
 <template>
   <div class="search_record">
-    <search-header/>
-    <div class="history_search search_com">
+    <div class="history_search search_com" v-if="historyList.length">
       <div class="title">
         <h4>历史搜索</h4>
-        <p>清空历史</p>
+        <p @click="handleClean">清空历史</p>
       </div>
       <div class="content">
-        <div class="item" v-for="item in historyList" :key="item.id">{{ item.name }}</div>
+        <div class="item" v-for="item in historyList" :key="item.uuid" @click="skipToSearchResult(item)">{{ item.searchName }}</div>
       </div>
     </div>
     <div class="hot_search search_com">
@@ -15,61 +14,37 @@
         <h4>热门搜索</h4>
       </div>
       <div class="content">
-        <div class="item" v-for="item in hotList" :key="item.id">{{ item.name }}</div>
+        <div class="item" v-for="item in hotSearchList" :key="item.uuid" @click="skipToSearchResult(item)">{{ item.searchName }}</div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import SearchHeader from '../../../core/SearchHeader.vue'
 export default {
   name: '',
-  props: [],
+  props: {
+    historyList: {
+      type: Array
+    },
+    hotSearchList: {
+      type: Array
+    }
+  },
   components: {
-    SearchHeader
   },
   data () {
     return {
-      'historyList': [
-        {
-          'id': '1',
-          'name': '健康体检套餐'
-        },
-        {
-          'id': '2',
-          'name': '优生优育套餐'
-        },
-        {
-          'id': '3',
-          'name': '优生优育'
-        },
-        {
-          'id': '4',
-          'name': '血脂六项'
-        },
-        {
-          'id': '5',
-          'name': '肝功九项'
-        }
-      ],
-      'hotList': [
-        {
-          'id': '6',
-          'name': '肺炎支原体抗体测定'
-        },
-        {
-          'id': '7',
-          'name': '心脏Holter'
-        },
-        {
-          'id': '8',
-          'name': '胃功能'
-        }
-      ]
     }
   },
   methods: {
-
+    handleClean () {
+      this.$emit('cleanHistoryRecord')
+    },
+    skipToSearchResult (item) {
+      this.$router.push({name: 'SearchResult', params: { keywords_uuid: item.searchName, from: 'search' }})
+    }
+  },
+  created () {
   }
 }
 </script>
@@ -96,6 +71,7 @@ export default {
       p{
         color: #aaa;
         font-size: 24px;
+        cursor: pointer;
       }
     }
     .content{

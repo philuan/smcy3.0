@@ -3,15 +3,24 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
-
+const proxyPath = 'http://192.168.31.236:80'
+// const proxyPath = 'http://192.168.31.11:80'
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
-
+    //proxyTable: {},
+    proxyTable: {
+      '/rest': {
+        target: proxyPath,
+        changeOrigin: true
+      },
+      '/wx': {
+        target: proxyPath,
+        changeOrigin: true
+      }
+    },
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST 改为0.0.0.0可以让本局域网段内机器通过ip地址访问
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
@@ -56,7 +65,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 

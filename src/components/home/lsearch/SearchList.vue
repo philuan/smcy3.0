@@ -2,26 +2,26 @@
   <div class="search_list">
     <div class="title">热门商品</div>
     <div class="content">
-      <div class="item">血流变</div>
-      <div class="item">
-        <p>血流变</p>
-      </div>
-      <div class="item">
-        <p>血流变</p>
-      </div>
+      <div class="item" v-for="item in keywordsCompleteList" :key="item" @click="skipToSearchResult(item)">{{ item }}</div>
     </div>
 </div>
 </template>
 <script>
 export default {
   name: '',
-  props: [],
+  props: {
+    keywordsCompleteList: {
+      type: Array
+    }
+  },
   data () {
     return {
     }
   },
   methods: {
-
+    skipToSearchResult (item) {
+      this.$router.push({name: 'SearchResult', params: { keywords_uuid: item, from: 'search' }})
+    }
   }
 }
 </script>

@@ -1,8 +1,8 @@
 <template lang="html">
   <section :class="[panelClass, cname]">
     <div class="title">
-      <h4>{{title}}</h4>
-      <p>{{more}}</p>
+      <h4>{{this.moreInfo.name}}</h4>
+      <p @click="skipToProjectList">{{more}}<i class="iconfont">&#xe630;</i></p>
     </div>
     <slot/>
   </section>
@@ -15,18 +15,24 @@ export default {
       type: String,
       default: ''
     },
-    title: {
-      type: String,
-      default: ''
-    },
     more: {
       type: String,
       default: '更多'
+    },
+    moreInfo: {
+      type: Object
     }
   },
   data () {
     return {
       panelClass: 'panel'
+    }
+  },
+  methods: {
+    skipToProjectList () {
+      this.$router.push({name: 'ProjectList',
+        params: { id: this.moreInfo.id, name: this.moreInfo.name, leaf: this.moreInfo.leaf }
+      })
     }
   }
 }
@@ -36,5 +42,12 @@ export default {
 @import "../css/element.scss";
 .panel{
   @include panel;
+  .iconfont{
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    position: relative;
+    top: 2px;
+  }
 }
 </style>

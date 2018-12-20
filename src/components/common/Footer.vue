@@ -1,6 +1,8 @@
 <template>
   <div class="footer_nav">
     <div  v-for ="(item, key) in nav" :key="key" @click='selectNav(item.name)' class="footer_column">
+      <!-- 其他选项默认全部false 只有购物车选项会根据有没有数据去修改show的值-->
+      <p class="red_point" v-show="item.show">{{ shoppingCartTotal }}</p>
       <!--到当前页面-->
       <router-link :to="{name:isSelect}" class="footer_router">
           <!--判断，当isSelect是当前页面的name时图标为active-->
@@ -13,53 +15,75 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'Footer',
+  props: {
+    isSelect: {
+      // 在导航守卫中设置了该路由名称，以便初始化
+      default: sessionStorage.getItem('smcyPathName')
+    }
+  },
+  computed: {
+    ...mapState(['shoppingCartTotal'])
+  },
   data () {
     return {
-      isSelect: sessionStorage.getItem('smcyPathName') || 'Home', // 在导航守卫中设置了该路由名称，以便初始化
+      isShow: true, // 假数据显示购物车红点
       nav: [
         {
           'title': '首页',
           'name': 'Home',
           'url': require('../../assets/footer_img/home.png'),
-          'url_active': require('../../assets/footer_img/home_active.png')
+          'url_active': require('../../assets/footer_img/home_active.png'),
+          'show': false
         },
         {
           'title': '分类',
           'name': 'Classification',
           'url': require('../../assets/footer_img/classification.png'),
-          'url_active': require('../../assets/footer_img/classification_active.png')
+          'url_active': require('../../assets/footer_img/classification_active.png'),
+          'show': false
         },
         {
           'title': '购物车',
-          'name': 'Shopping',
+          'name': 'ShoppingCart',
           'url': require('../../assets/footer_img/shopping.png'),
-          'url_active': require('../../assets/footer_img/shopping_active.png')
+          'url_active': require('../../assets/footer_img/shopping_active.png'),
+          'show': false
         },
         {
           'title': '订单',
           'name': 'Order',
           'url': require('../../assets/footer_img/order.png'),
-          'url_active': require('../../assets/footer_img/order_active.png')
+          'url_active': require('../../assets/footer_img/order_active.png'),
+          'show': false
         },
         {
           'title': '我的',
           'name': 'Mine',
           'url': require('../../assets/footer_img/mine.png'),
-          'url_active': require('../../assets/footer_img/mine_active.png')
+          'url_active': require('../../assets/footer_img/mine_active.png'),
+          'show': false
         }
       ]
     }
   },
   methods: {
     selectNav (name) {
-      this.isSelect = name // 双重设置，保证isSelect确切有值
+      // 根据导航守卫获取到的值跳转至对应的路由
       this.$router.push('/' + name.toLowerCase())
+      // 将name值传递给父组件 至于显示隐藏放在APP组件中统一处理
+      this.$emit('setRouter', name)
     }
   },
   mounted () {
-    this.selectNav(this.isSelect)
+    //  处理购物车有没有红点逻辑
+    if (this.isShow) {
+      this.nav[2].show = true
+    } else {
+      this.nav[2].show = false
+    }
   }
 }
 </script>
@@ -77,9 +101,25 @@ export default {
     left: 0;
     padding-top: 15px;
     box-shadow:0px -2px 3px 0px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
     .footer_column{
       width: 100%;
       height: 100%;
+      position: relative;
+      .red_point{
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: red;
+        border-radius: 50%;
+        right: 30%;
+        top: 4px;
+        z-index: 5;
+        text-align: center;
+        line-height: 24px;
+        font-size: $font18;
+        color: #ffffff;
+      }
       .footer_router{
         width: 46px;
         text-align: center;
@@ -87,6 +127,8 @@ export default {
           margin-bottom: 10px;
           display: block;
           margin: 0 auto;
+          width: 44px;
+          height: 44px;
         }
         span{
           font-size: $font22;
@@ -94,36 +136,6 @@ export default {
         }
         .active{
           color: #1FB0E7;
-        }
-      }
-      .footer_router:nth-child(1){
-        img{
-          width: 40px;
-          height: 36px;
-        }
-      }
-      .footer_router:nth-child(2){
-        img{
-          width: 40px;
-          height: 38px;
-        }
-      }
-      .footer_router:nth-child(3){
-        img{
-          width: 42px;
-          height: 37px;
-        }
-      }
-      .footer_router:nth-child(4){
-        img{
-          width: 34px;
-          height: 40px;
-        }
-      }
-      .footer_router:nth-child(5){
-        img{
-          width: 35px;
-          height: 40px;
         }
       }
     }

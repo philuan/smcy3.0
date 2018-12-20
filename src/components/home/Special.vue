@@ -1,42 +1,30 @@
 <template lang="html">
-  <panel title="特检新品">
+  <panel :moreInfo="objInfo">
     <section class="content">
       <div class="item">
         <ul>
-          <li>
-            <img src="@/assets/home_img/gangong.png">
+          <li v-for="(item, index) in packageList" :key="item.id" v-if="index < 2" @click="ToSkipInfo(item)">
+            <img v-lazy="staticUrl + item.logo">
             <div class="label">
-              <h4>肝功九项</h4>
-              <p>唐都医院</p>
+              <h4>{{ item.name }}</h4>
+              <p>{{ item.hospitalName }}</p>
               <div class="price">
                 <span class="per">¥</span>
-                <span>128</span>
-                <span class="per">.00</span>
-              </div>
-            </div>
-          </li>
-          <li>
-            <img src="@/assets/home_img/shengong.png">
-            <div class="label">
-              <h4>肾功六项</h4>
-              <p>西京医院</p>
-              <div class="price">
-                <span class="per">¥</span>
-                <span>128</span>
+                <span>{{ item.nowPrice }}</span>
                 <span class="per">.00</span>
               </div>
             </div>
           </li>
         </ul>
       </div>
-      <div class="item">
-        <img src="@/assets/home_img/xuezhi.png">
+      <div class="item" v-for="(item, index) in packageList" :key="item.id" v-if="index === 2" @click="ToSkipInfo(item)">
+        <img v-lazy="staticUrl + item.logo">
         <div class="label">
-          <h4>血脂六项</h4>
-          <p>西安交通大学第一附属医院</p>
+          <h4>{{ item.name }}</h4>
+          <p>{{ item.hospitalName }}</p>
           <div class="price">
             <span class="per">¥</span>
-            <span>128</span>
+            <span>{{ item.nowPrice }}</span>
             <span class="per">.00</span>
           </div>
         </div>
@@ -45,20 +33,30 @@
    </panel>
 </template>
 <script>
+import {config} from '../../config/config'
 import panel from '../../core/panel.vue'
 export default {
   name: 'special',
   components: {
     panel
   },
-  props: [],
+  props: {
+    packageList: {
+      type: Array
+    },
+    objInfo: {
+      type: Object
+    }
+  },
   data () {
     return {
-
+      staticUrl: config.static_url
     }
   },
   methods: {
-
+    ToSkipInfo (item) {
+      this.$router.push({name: 'ProjectDetail', params: { uuid: item.uuid, type: item.type }})
+    }
   }
 }
 </script>
@@ -103,7 +101,7 @@ export default {
         }
         .label{
           position: absolute;
-          top: 30px;
+          top: 20px;
           left: 32px;
           h4{
             color: #222;
@@ -112,10 +110,10 @@ export default {
           p{
             color: #aaa;
             font-size: 24px;
-            margin-top: 20px;
+            margin-top: 10px;
           }
           .price{
-            margin-top: 20px;
+            margin-top: 10px;
             color: #FFC000;
             font-size: 24px;
             .per{

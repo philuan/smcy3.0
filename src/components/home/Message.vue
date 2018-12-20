@@ -1,14 +1,11 @@
 <template>
   <div class="message">
-    <div class="title">
-      <h4>消息通知</h4>
-      <span class="back"></span>
-    </div>
-    <div class="messageList" v-if="list.length">
-      <div class="item" v-for="item in list" :key="item.id">
-        <h5>{{ item.name }}</h5>
-        <p>{{ item.description }}</p>
-        <span></span>
+    <HeaderCom @backPage="back" title="消息通知"/>
+    <div class="messageList" v-if="messageList.length">
+      <div class="item" v-for="item in messageList" :key="item.id">
+        <h5>{{ item.title }}</h5>
+        <p>{{ item.content }}</p>
+        <span v-if="item.markRead === '1'"></span>
       </div>
     </div>
     <div class="no_message" v-else>
@@ -18,35 +15,35 @@
   </div>
 </template>
 <script>
+import HeaderCom from '../../core/HeaderCom.vue'
+import api from '../../utils/api'
 export default {
   name: 'message',
   props: [],
+  components: {
+    HeaderCom
+  },
   data () {
     return {
-      list: [
-        {
-          'id': 1,
-          'name': '新订单提醒',
-          'description': '14:20:00有人发布新订单了，快去查看抢单吧,快去查看抢单吧,快去查看抢单吧！',
-          'read': 1
-        },
-        {
-          'id': 2,
-          'name': '新订单提醒',
-          'description': '14:20:00有人发布新订单了，快去查看抢单吧！',
-          'read': 2
-        },
-        {
-          'id': 3,
-          'name': '新订单提醒',
-          'description': '14:20:00有人发布新订单了，快去查看抢单吧！',
-          'read': 2
-        }
-      ]
+      messageList: []
     }
   },
   methods: {
-
+    back () {
+      this.$router.go(-1)
+    },
+    getMessageList () {
+      api.messageList().then(res => {
+        if (res.data.code === 200) {
+          this.messageList = res.data.successObject.records
+        }
+      }).catch(res => {
+        console.log(res)
+      })
+    }
+  },
+  mounted () {
+    this.getMessageList()
   }
 }
 </script>
@@ -120,7 +117,7 @@ export default {
         width: 100%;
       }
       p{
-        margin-top: -12px;
+        margin-top: -26px;
         color: #aaa;
         font-size: 24px;
         width: 100%;

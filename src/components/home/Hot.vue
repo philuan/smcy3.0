@@ -1,65 +1,59 @@
 <template>
-  <Panel title="热搜项目">
+  <panel :moreInfo="objInfo">
     <section class="content">
       <div class="item">
         <ul>
-          <li>
-            <img src="@/assets/home_img/feiyan.png">
+          <li v-for="(item, index) in packageList" :key="item.id" v-if="index < 2" @click="ToSkipInfo(item)">
+            <img v-lazy="staticUrl + item.logo">
             <div class="label">
-              <h4>肺炎支原体抗体测定</h4>
-              <p>西京医院</p>
-              <p class="hot_rate">关注：<span>361</span></p>
-            </div>
-          </li>
-          <li>
-            <img src="@/assets/home_img/kangti.png">
-            <div class="label">
-              <h4>抗环瓜氨酸堕胎抗体</h4>
-              <p>唐都医院</p>
-              <p class="hot_rate">关注：<span>361</span></p>
+              <h4>{{ item.name }}</h4>
+              <p>{{ item.hospitalName }}</p>
+ <!--              <p class="hot_rate">关注：<span>{{ item.hot_rate }}</span></p> -->
             </div>
           </li>
         </ul>
       </div>
       <div class="item">
         <ul>
-          <li>
-            <img src="@/assets/home_img/weigongneng.png">
+          <li v-for="(item, index) in packageList" :key="item.id" v-if="index > 1 && index <4" @click="ToSkipInfo(item)">
+            <img v-lazy="staticUrl + item.logo">
             <div class="label">
-              <h4>胃功能</h4>
-              <p>唐都医院</p>
-              <p class="hot_rate">关注：<span>361</span></p>
-            </div>
-          </li>
-          <li>
-            <img src="@/assets/home_img/xinzang.png">
-            <div class="label">
-              <h4>心脏Holter</h4>
-              <p class="hot_rate">唐都医院</p>
-              <p class="hot_rate">关注：<span>361</span></p>
+              <h4>{{ item.name }}</h4>
+              <p>{{ item.hospitalName }}</p>
+<!--               <p class="hot_rate">关注：<span>{{ item.hot_rate }}</span></p> -->
             </div>
           </li>
         </ul>
       </div>
       <div class="line"></div>
     </section>
-  </Panel>
+</panel>
 </template>
 <script>
+import {config} from '../../config/config'
 import Panel from '../../core/panel.vue'
 export default {
   name: 'Hot',
   components: {
     Panel
   },
-  props: [],
+  props: {
+    packageList: {
+      type: Array
+    },
+    objInfo: {
+      type: Object
+    }
+  },
   data () {
     return {
-
+      staticUrl: config.static_url
     }
   },
   methods: {
-
+    ToSkipInfo (item) {
+      this.$router.push({name: 'ProjectDetail', params: { uuid: item.uuid, type: item.type }})
+    }
   }
 }
 </script>
@@ -110,7 +104,7 @@ export default {
         }
         .label{
           position: absolute;
-          top: 30px;
+          top: 20px;
           left: 32px;
           h4{
             color: #222;
@@ -119,7 +113,7 @@ export default {
           p{
             color: #aaa;
             font-size: 24px;
-            margin-top: 20px;
+            margin-top: 10px;
           }
           .hot_rate{
             color: #444;
