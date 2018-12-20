@@ -1,29 +1,22 @@
 <template>
-  <panel title="组合项目">
+  <panel :moreInfo="objInfo">
     <section class="content">
-      <div class="item">
-        <img src="@/assets/home_img/examination_package.png">
+      <div class="item" v-for="(item, index) in packageList" :key="item.id" v-if="index === 0" @click="ToSkipInfo(item)">
+        <img v-lazy="staticUrl + item.logo" />
         <div class="label">
-          <h4>健康体检套餐</h4>
-          <p>西安交通大学第一附属医院</p>
-          <span>去看看</span>
+          <h4>{{ item.name }}</h4>
+          <p>{{ item.hospitalName }}</p>
+          <div>去看看</div>
         </div>
       </div>
       <div class="item">
         <ul>
-          <li>
+          <li v-for="(item, index) in packageList" :key="item.id" v-if="index < 3 && index !== 0" @click="ToSkipInfo(item)">
             <div class="label">
-              <h4>优生女性套餐</h4>
-              <p>西京医院</p>
+              <h4>{{item.name}}</h4>
+              <p>{{item.hospitalName}}</p>
             </div>
-            <img src="@/assets/home_img/female_package.png">
-          </li>
-          <li>
-            <div class="label">
-              <h4>优生优育全套</h4>
-              <p>西京医院（体检二部）</p>
-            </div>
-            <img src="@/assets/home_img/all_package.png">
+            <img v-lazy="staticUrl + item.logo" />
           </li>
         </ul>
       </div>
@@ -32,20 +25,33 @@
   </panel>
 </template>
 <script>
+import {config} from '../../config/config'
 import panel from '../../core/panel.vue'
 export default {
   name: 'package',
   components: {
     panel
   },
-  props: [],
+  props: {
+    packageList: {
+      type: Array
+    },
+    objInfo: {
+      type: Object
+    }
+  },
+  computed: {
+
+  },
   data () {
     return {
-
+      staticUrl: config.static_url
     }
   },
   methods: {
-
+    ToSkipInfo (item) {
+      this.$router.push({name: 'ProjectDetail', params: { uuid: item.uuid, type: item.type }})
+    }
   }
 }
 </script>
@@ -61,17 +67,20 @@ export default {
       text-align: left;
       .item{
         position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 0;
+        padding-bottom: 37.3%;
         &:nth-child(1){
           margin-bottom: 4px;
         }
         img{
             width: 100%;
-            height: 100%;
             vertical-align: middle;
         }
         .label{
           position: absolute;
-          top: 30px;
+          top: 20px;
           left: 32px;
           h4{
             color: #222;
@@ -80,16 +89,14 @@ export default {
           p{
             color: #aaa;
             font-size: 24px;
-            margin-top: 20px;
+            margin-top: 10px;
           }
-          span{
-            display: block;
+          div{
             width: 90px;
-            height: 34px;
-            line-height: 34px;
             color: #fff;
-            background: #36C8FF;
-            margin-top: 20px;
+            padding: 8px 0;
+            background: linear-gradient(left, #36C8FF, #1FB0E7);
+            margin-top: 10px;
             font-size: 20px;
             text-align: center;
           }

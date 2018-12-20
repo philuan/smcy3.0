@@ -1,19 +1,25 @@
 <template lang="html">
   <div class="search">
-      <div class="location">雁塔区</div>
-      <div class="seachBox">
-        <img src="@/assets/home_img/searchBtn.png">
-        <input type="text" placeholder="请输入搜索内容">
-      </div>
-      <div class="message">
+    <div class="location">雁塔区</div>
+    <div class="seachBox">
+      <img src="@/assets/home_img/searchBtn.png">
+      <router-link tag="span" to="/lsearch">请输入搜索内容</router-link>
+    </div>
+    <div class="message">
+      <router-link to="/message">
         <img src="@/assets/home_img/message.png">
-        <p></p>
-      </div>
+      </router-link>
+      <span v-if="show"></span>
+    </div>
   </div>
 </template>
 <script>
 export default {
-  props: [],
+  props: {
+    show: {
+      type: Boolean
+    }
+  },
   components: {
 
   },
@@ -22,7 +28,6 @@ export default {
     }
   },
   methods: {
-
   }
 }
 </script>
@@ -31,70 +36,79 @@ export default {
   .search{
     @include list(row);
     position: relative;
-    min-height: 44px; /*no*/
+    min-height: 88px;
     width: 100%;
     background: #fff;
     .location{
       position: absolute;
-      top: 7px; /*no*/
-      left: 15px; /*no*/
-      height: 30px; /*no*/
-      line-height: 30px; /*no*/
+      top: 14px;
+      left: 30px;
+      line-height: 65px;
+      vertical-align: bottom;
       background: url("../../assets/home_img/location.png")no-repeat;
-      background-size: 14px 18px; /*no*/
-      background-position: left 6px; /*no*/
-      text-indent: 19px; /*no*/
-      font-size: 14px; /*no*/
+      background-size: 28px 36px;
+      background-position: left 12px;
+      text-indent: 38px;
+      font-size: 28px;
       color: #1FB0E7;
     }
     .seachBox{
       position: absolute;
-      top: 7px; /*no*/
-      left: 81px; /*no*/
-      right: 45px; /*no*/
-      bottom: 7px; /*no*/
+      top: 14px;
+      left: 162px;
+      right: 90px;
+      bottom: 14px;
       box-sizing: border-box;
-      height: 30px; /*no*/
+      height: 60px;
+      line-height: 60px;
       overflow: hidden;
-      border-radius: 6px;
+      border-radius: 12px;
       color: #F0F6FA;
       background: #F0F0F0;
       img{
         position: absolute;
-        top: 8px; /*no*/
-        left: 11px; /*no*/
-        width: 14px; /*no*/
-        height: 14px; /*no*/
+        top: 16px;
+        left: 22px;
+        width: 28px;
+        height: 28px;
       }
-      input{
+      span{
         position: absolute;
-        top: 0; /*no*/
-        left: 33px; /*no*/
-        bottom: 0; /*no*/
-        right: 6px; /*no*/
+        top: 0;
+        left: 66px;
+        bottom: 0;
+        right: 12px;
         box-sizing: border-box;
         height: 100%;
         width: auto;
         appearance: none;
         border: none;
         background: #F0F0F0;
-        font-size: 12px; /*no*/
+        font-size: 24px;
         color: #aaa;
         overflow: hidden;
-      }
-      input::-webkit-input-placeholder {
-        color: #aaa;
+        text-align: left;
       }
     }
     .message{
       position: absolute;
-      top: 7px; /*no*/
-      right: 15px; /*no*/
+      top: 14px;
+      right: 30px;
       img{
-        width: 15px; /*no*/
-        height: 18px; /*no*/
-        margin-top: 6px; /*no*/
-        margin-left: 14px;
+        width: 30px;
+        height: 36px;
+        margin-top: 12px;
+        margin-left: 28px;
+      }
+      span{
+        position: absolute;
+        top: 10px;
+        right: 0;
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #FF0000;
       }
     }
   }

@@ -3,32 +3,32 @@
     <div class="header">
       <!--推广和设置图标-->
       <div class="extension_setting">
-        <img :src="extensionImg" class="extension">
-        <img :src="settingImg" class="setting">
+        <img :src="extensionImg" class="extension" @click="goRouter('Extension')">
+        <img :src="settingImg" class="setting" @click="goRouter('Setting')">
       </div>
       <!--名字个人信息头像-->
       <div class="name_img">
         <p>
           <span>张珊珊</span>
-          <span>个人信息>></span>
+          <span @click="goRouter('PersionalInformation')">个人信息>></span>
         </p>
         <img :src="defaultImg" alt="">
       </div>
       <!--积分预约评价优惠券-->
       <div class="header_info">
-        <p>
+        <p @click="goRouter('Integral')">
           <span>123</span>
           <span>积分 (分)</span>
         </p>
-        <p>
+        <p @click="goRouter('Appointment')">
           <span>2</span>
           <span>预约 (次)</span>
         </p>
-        <p>
+        <p @click="goRouter('MyComment')">
           <span>34</span>
           <span>评价 (条)</span>
         </p>
-        <p>
+        <p @click="goRouter('Coupon')">
           <span>1</span>
           <span>优惠券 (张)</span>
         </p>
@@ -40,7 +40,7 @@
         <img src="../../../static/images/hongbao1497.png" class="envelopes">
       </div>
       <ul>
-        <li v-for="(item, ind) in listData" :key="ind">
+        <li v-for="(item, ind) in listData" :key="ind" @click="goRouter(item.rName)">
           <img :src="item.img" alt="">
           <p class="list_title">{{item.title}}</p>
           <p class="arrow"> > </p>
@@ -61,25 +61,34 @@ export default {
       listData: [
         {
           img: require('../../assets/mine_img/mine_follow.png'),
-          title: '我的关注'
+          title: '我的关注',
+          rName: 'MyFollow'
         },
         {
           img: require('../../assets/mine_img/mine_presentation.png'),
-          title: '我的报告'
+          title: '我的报告',
+          rName: 'MyReport'
         },
-        {
-          img: require('../../assets/mine_img/mine_address.png'),
-          title: '地址管理'
-        },
+        // {
+        //   img: require('../../assets/mine_img/mine_address.png'),
+        //   title: '地址管理'
+        // },
         {
           img: require('../../assets/mine_img/mine_family.png'),
-          title: '就医人管理'
+          title: '就医人管理',
+          rName: 'PatientList' // 路由地址
         },
         {
           img: require('../../assets/mine_img/help_feedback.png'),
-          title: '帮助与反馈'
+          title: '帮助与反馈',
+          rName: 'Help'
         }
       ]
+    }
+  },
+  methods: {
+    goRouter (name) {
+      this.$router.push({name: name})
     }
   }
 }
@@ -105,10 +114,10 @@ export default {
         display: flex;
         justify-content: space-between;
         width: 100%;
-        height: 44px;
+        height: 60px;
         img{
-          width: 44px;
-          height: 44px;
+          width: 60px;
+          height: 60px;
         }
         .extension{
           margin-left: 30px;
@@ -125,17 +134,19 @@ export default {
         justify-content: space-between;
         p{
           color: #ffffff;
-          width: 140px;
+          width: 300px;
+          text-align: left;
           span{
+            width: 100%;
             display: inline-block;
           }
           span:first-child{
-            font-size: $font40;
-            margin-top: 22px;
+            font-size: $font44;
+            margin-top: 11px;
           }
           span:nth-child(2){
             font-size: $font22;
-            margin-top: 28px;
+            margin-top: 13px;
           }
         }
         img{
@@ -185,6 +196,7 @@ export default {
         padding-top: 20px;
         padding-bottom: 10px;
         background: #ffffff;
+        margin-bottom: 2px;
         .envelopes{
           width: 624px;
           height: 129px;
@@ -209,7 +221,8 @@ export default {
           }
           .list_title{
             margin-left: 20px;
-            font-size: $font34;
+            color: #111111;
+            font-size: $font32;
           }
           .arrow{
             color: #BFBFBF;

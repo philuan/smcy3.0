@@ -1,11 +1,10 @@
 <template lang="html">
   <section :class="cname">
-    <swiper :options="options" :not-next-tick="options.notNextTick">
-      <swiper-slide v-for="item in items" :key="item.href">
-        <router-link :to="{name: item.href}">
-          <!-- <img :src="item.src" alt=""> -->
-          <img :src="require(`@/assets/home_img/${item.src}`)" alt="">
-        </router-link>
+    <swiper :options="options" :not-next-tick="options.notNextTick" v-if='items.length'>
+      <swiper-slide v-for="item in items" :key="item.url">
+        <!-- <router-link :to="{name: item.url}"> -->
+          <img :src="staticUrl + item.image" alt="">
+        <!-- </router-link> -->
       </swiper-slide>
       <div class="swiper-pagination" slot="pagination" v-if="options.pagination"></div>
     </swiper>
@@ -13,6 +12,7 @@
 </template>
 
 <script>
+import {config} from '../config/config'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.css'
 export default {
@@ -24,14 +24,14 @@ export default {
   props: {
     cname: {
       type: String,
-      default: ''
+      default: 'slider'
     },
     options: {
       type: Object,
       default () {
         return {
           autoplay: true, // 自动播放
-          loop: true, // 是否循环
+          loop: true,
           pagination: {
             el: '.swiper-pagination'
           },
@@ -45,10 +45,14 @@ export default {
         return []
       }
     }
+  },
+  data () {
+    return {
+      staticUrl: config.static_url
+    }
   }
 }
 </script>
 
 <style lang="scss">
-
 </style>
