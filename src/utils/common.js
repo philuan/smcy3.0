@@ -6,12 +6,29 @@
  * @author   : 燕明媚
  * @version : 1.00
  * @date     : 2018-11-27
- * @direction: 公用弹框等封装
+ * @direction: 公用弹框及浏览器端存储等封装
  * @comment ：
  **************************************************************************/
 // import Vue from 'vue'
+import Vue from 'vue'
+import { Toast } from 'mint-ui'
+Vue.component(Toast.name, Toast)
 export default {
   encodePrefix: 'YJC',
+
+  /**
+   * @class: Toast
+   * @param: {string} message
+   *         position position可选 'top','bottom','middle'
+   *         duration duration可选
+   */
+  toast (message, position, duration) {
+    Toast({
+      message: message,
+      position: (position === '') ? 'middle' : position,
+      duration: (duration === '') ? 2000 : duration
+    })
+  },
 
   setStorage (name, value, prefix) {
     name = this.get_localStorage_key(name, prefix)

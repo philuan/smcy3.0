@@ -17,8 +17,8 @@ export default {
   handleTime () {
     let endTime = common.getCookie('EXPIRES')
     let currentTime = common.getServerDate().getTime()
-    common.setCookie('WX_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJXWF9UT0tFTiI6IjI5OTY5NjU5NjUyOTE4ODg2NCIsImV4cCI6MTU0NTIyMzc2NywiaWF0IjoxNTQ1MTM3MzY3fQ.TE5ybhzaToa0AF2G4g6DC6vO9Hnwon7TUW3FdBLZ_tA')
-    common.setCookie('EXPIRES', '')
+    // common.setCookie('WX_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJXWF9UT0tFTiI6IjMwMTA0NDU5OTEwNjA0ODAwMCIsImV4cCI6MTU0NTM2MDkyNiwiaWF0IjoxNTQ1Mjc0NTI2fQ.zNbHevP-hqxlqC3NgzwWjbE_Kh__g_xUPuWHQ-5nsq0')
+    // common.setCookie('EXPIRES', '')
     if ((endTime - currentTime) / 1000 < 3600) {
       this.refreshToken()
     }

@@ -5,20 +5,20 @@
     </div>
     <div class="info_list">
       <!--订单号列表-->
-      <div v-for="(itemRecords, ind) in records" :key="ind" class="order_num_list">
+      <div v-for="(itemRecords, ind) in records" :key="ind" class="order_num_list"  v-show="isShowList">
         <div class="order_num_container">
           <!--订单号头部信息-->
           <div class="info_header">
             <span class="order_num">订单号：{{itemRecords.order.orderNo}}</span>
             <span :class="state_payment">{{itemRecords.order.payStatus}}</span>
           </div>
-          <!--该订单号下边的检查项目列表-->
+          <!--该订单号下边的检查项目列表 {{hospitalList[ind].name}} {{itemInner.hospitalName}}-->
           <ul @click="goOrderDetail(itemRecords.order.uuid, itemRecords.order.orderStatus)">
             <li v-for="(itemInner, ind) in itemRecords.projectList" :key="ind">
               <img v-lazy="staticUrl + itemInner.image" alt="">
               <div class="check">
                 <p class="check_name">{{itemInner.name}}</p>
-                <p class="check_hospital">{{itemInner.hospital}}</p>
+                <p class="check_hospital">{{itemInner.hospitalName}}</p>
               </div>
               <div class="cycle_cost">
                 <p class="cycle">周期：<span>{{itemInner.period}}</span></p>
@@ -26,7 +26,7 @@
               </div>
             </li>
           </ul>
-          <!--就医人姓名和该订单下的总消费金额 就医人字段{{itemRecords.order.patient}}-->
+          <!--就医人姓名和该订单下的总消费金额 就医人字段{{itemRecords.order.patient}}{{itemRecords.patient.name}}-->
           <div class="order_num_info">
             <p class="jyr">就医人：{{itemRecords.patient.name}}</p>
             <p class="total">共计{{itemRecords.projectList.length}}件商品，总金额&nbsp;<span>¥{{itemRecords.order.price}}</span></p>
@@ -55,13 +55,19 @@ export default {
       pageSize: 10,
       pageNo: 1,
       pageTotal: 1,
-      orderStatus: '1',
+      orderStatus: '',
       state_payment: 'fkq', // 此处分为付款前和付款后，名称用首字母组合
       successObject: {},
+      isShowList: false,
       records: [
         {
-          projectList: [],
-          order: {}
+          projectList: [{hospitalName: ''}],
+          order: {
+            name: ''
+          },
+          patient: {
+            name: ''
+          }
         }
       ],
       hospitalList: this.common.getStorage('hospitalList')
@@ -94,6 +100,7 @@ export default {
         if (res.data.code === 200) {
           let { successObject } = res.data
           let { records } = successObject
+          console.log(records)
           records.forEach(function (value, ind) {
             // isShowOrderBot用来判断是否显示底部按钮
             if (value.order.orderStatus === '1') {
@@ -116,7 +123,21 @@ export default {
             }
           })
           this.records = records
+          console.log(this.records)
           this.pageTotal = successObject.pages
+          this.isShowList = true
+          // 处理医院编号对应医院名称
+          if (records.length) { // 判断有没有数据，有数据的话再进入循环
+            for (let k = 0; k < this.records.length; k++) {
+              for (let i = 0; i < this.records[k].projectList.length; i++) {
+                for (let j = 0; j < this.hospitalList.length; j++) {
+                  if (parseInt(this.records[k].projectList[i].hospital) === parseInt(this.hospitalList[j].uuid)) {
+                    this.records[k].projectList[i].hospitalName = this.hospitalList[j].name
+                  }
+                }
+              }
+            }
+          }
         }
       })
     },
@@ -155,7 +176,9 @@ export default {
             serviceCharge: res.data.successObject.order.servicePrice, // 服务费
             couponPrice: res.data.successObject.order.couponPrice, // 优惠金额
             price: res.data.successObject.order.price, // 订单金额
-            uuid: res.data.successObject.order.uuid // 订单uuid
+            uuid: res.data.successObject.order.uuid, // 订单uuid
+            coupon: res.data.successObject.order.coupon // 优惠券id
+
           }
           let orderConfirmInfo = {
             'totalPrice': res.data.successObject.order.projectPrice, // 项目金额
@@ -204,6 +227,7 @@ export default {
         height: 78px;
         line-height: 78px;
         font-size: $font24;
+        text-align: center;
       }
       p.active{
         color: #1FB0E7;
@@ -250,7 +274,7 @@ export default {
                 border: 1px solid #1FB0E7;
               }
               .check{
-                width: 200px;
+                width: 260px;
                 height: 130px;
                 margin-left: 20px;
                 display: inline-flex;
@@ -259,7 +283,7 @@ export default {
                 p{
                   height: 60px;
                   text-align: left;
-                  width: 200px;
+                  width: 260px;
                   line-height: 60px;
                 }
                 .check_name{

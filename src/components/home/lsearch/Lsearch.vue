@@ -10,7 +10,6 @@ import api from '../../../utils/api'
 import SearchHeader from '../../../core/SearchHeader.vue'
 import SearchList from './SearchList'
 import SearchRecord from './SearchRecord'
-import { Toast } from 'mint-ui'
 export default {
   name: 'lsearch',
   props: [],
@@ -39,9 +38,11 @@ export default {
       api.keywordSearch(params).then(res => {
         if (res.data.code === 200) {
           this.keywordsCompleteList = res.data.successObject
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     back () {
@@ -51,32 +52,34 @@ export default {
       api.history().then(res => {
         if (res.data.code === 200) {
           this.historyList = res.data.successObject
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     gethotSearchList () {
       api.hotSearch().then(res => {
         if (res.data.code === 200) {
           this.hotSearchList = res.data.successObject
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     cleanHistoryRecord () {
       api.clearHistory().then(res => {
         if (res.data.code === 200) {
-          Toast({
-            message: '删除成功',
-            position: 'bottom',
-            duration: 2000
-          })
+          this.common.toast('删除成功', 'bottom')
           this.historyList = []
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     }
   },

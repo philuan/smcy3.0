@@ -1,24 +1,25 @@
 'use strict'
 import axios from 'axios'
-// import {config} from '../config/config'
-// let apiURL = config.service_url
-let apiURL = window.location.protocol + '//' + window.location.host
+import storeD from '../store'
+import {config} from '../config/config'
+let apiURL = config.service_url
+// let apiURL = window.location.protocol + '//' + window.location.host
 
+// 添加请求拦截器
 axios.interceptors.request.use(config => {
-  // loading 开始加载动画
-  // Indicator.open()
-  // let token = sessionStorage.getItem('token')
-  // if (token) {
-  //   if (!config.params) {
-  //     config.params = {
-  //       token: token
-  //     }
-  //   } else {
-  //     config.params.token = token
-  //   }
-  // }
+  // 加载动画
+  storeD.dispatch('fetchLoading', true)
   return config
 }, error => {
+  return Promise.reject(error)
+})
+
+// 添加响应拦截器,返回状态判断
+axios.interceptors.response.use((res) => {
+  // 隐藏动画
+  storeD.dispatch('fetchLoading', false)
+  return res
+}, (error) => {
   return Promise.reject(error)
 })
 
@@ -48,12 +49,6 @@ export default {
    * @param url
    * @param data
    */
-
-  // timestamp (url) {
-  //   var getTimestamp = new Date().getTime()
-  //   url = url + '?timestamp=' + getTimestamp
-  //   return url
-  // }
   get: function (url, params) {
     var getTimestamp = new Date().getTime()
     url = url + '?timestamp=' + getTimestamp

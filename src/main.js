@@ -11,12 +11,14 @@ import store from './store'
 import common from './utils/common.vue.js'
 import appConfig from './utils/appConfig'
 // import vConsole from '../static/vconsole.js'
-import Mint from 'mint-ui'
+import { Lazyload, InfiniteScroll, Picker } from 'mint-ui'
 import 'mint-ui/lib/style.css'
 import './assets/scss/my-mint.css'
 
 // 挂载到Vue实例上面
-Vue.use(Mint)
+Vue.use(Lazyload)
+Vue.use(InfiniteScroll)
+Vue.component(Picker.name, Picker)
 Vue.use(common)
 // Vue.prototype.wx = wx
 Vue.config.productionTip = false

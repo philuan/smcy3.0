@@ -50,7 +50,7 @@
       <div class="location_info">
         <h4>服务位置</h4>
         <div class="content">
-          <div class="item" v-for="(item, index) in locationList" :key="index" @click="selectLocation(index, item)">
+          <div class="item" v-for="(item, index) in locationList" :key="index" @click="selectLocation(index, item, 0)">
             <img v-if="location_index===index" src="@/assets/shopping_img/selected.png">
             <img v-else src="@/assets/shopping_img/select.png">
             <label>{{ item.name }}¥{{ item.price }}</label>
@@ -60,7 +60,7 @@
       <div class="report_info">
         <h4>纸质报告</h4>
         <div class="content">
-          <div class="item" v-for="(item, index) in reportList" :key="index" @click="selectReport(index, item)">
+          <div class="item" v-for="(item, index) in reportList" :key="index" @click="selectReport(index, item, 0)">
             <img v-if="report_index===index" src="@/assets/shopping_img/selected.png">
             <img v-else src="@/assets/shopping_img/select.png">
             <label>{{ item.name }}</label>
@@ -70,7 +70,9 @@
     </div>
     <div class="coupon_info common_info">
       <h4>优惠券</h4>
-      <p>暂无可用优惠券</p>
+      <router-link tag="p" v-if="AvailableCoupons && couponId" to="/coupon">已使用优惠券</router-link>
+      <router-link tag="p" v-else-if="AvailableCoupons && !couponId" to="/coupon">请选择优惠券</router-link>
+      <p v-else>无可用优惠券</p>
       <i class="iconfont">&#xe633;</i>
     </div>
     <div class="attention_info common_info">
@@ -82,7 +84,7 @@
     </div>
     <div class="price_info">
       <p>
-        <label>项目金额({{this.projectNumber}})</label>
+        <label>项目金额({{projectNumber}})</label>
         <span>¥{{totalPrice}}</span>
       </p>
       <p>
@@ -95,7 +97,7 @@
       </p>
       <p>
         <label>优惠金额</label>
-        <span class="coupon_price" v-if="coupon.id">¥{{serviceCharge}}</span>
+        <span class="coupon_price" v-if="couponId">¥{{serviceCharge}}</span>
         <span class="coupon_price" v-else>¥0.00</span>
       </p>
     </div>
@@ -127,9 +129,9 @@ export default {
   name: '',
   props: [],
   computed: {
-    ...mapState(['coupon']),
+    ...mapState(['AvailableCoupons']),
     amount: function () {
-      if (this.coupon.id) {
+      if (this.couponId) {
         return this.totalPrice
       } else {
         return this.totalPrice + this.serviceCharge
@@ -150,21 +152,21 @@ export default {
         {
           'name': '三环内',
           'price': '138.00',
-          'type': 0
+          'type': '0'
         },
         {
           'name': '三环外',
           'price': '198.00',
-          'type': 1
+          'type': '1'
         }
       ],
       reportList: [
         {
-          'type': 1,
+          'type': '1',
           'name': '需要'
         },
         {
-          'type': 0,
+          'type': '0',
           'name': '不需要'
         }
       ],
@@ -179,13 +181,17 @@ export default {
       specialIsshow: 0, // 特殊情况弹窗显示/影藏
       specailRecord: [], // 特殊情况选择后呈现
       serviceCharge: 198.00,
-      scope: 1, // 服务位置 0:三环内, 1:三环外
-      reportNeed: 0, // 纸质报告 0:不需要, 1:需要
+      scope: '1', // 服务位置 0:三环内, 1:三环外
+      reportNeed: '0', // 纸质报告 0:不需要, 1:需要
       projects: [], // 项目数据处理结果
       notes: [], // 注意事项
       uuid: '', // 订单uuid
       OrderUuidChange: '', // 生成订单后返回的uuid
-      hospitalList: this.common.getStorage('hospitalList')
+      hospitalList: this.common.getStorage('hospitalList'),
+      patientlist: [], // 就医人列表数据
+      pageNo: 1, // 当前页
+      pageSize: 10000, // 每页条目数
+      couponId: '' // 优惠券id
     }
   },
   methods: {
@@ -214,15 +220,21 @@ export default {
       }
     },
     // 选择服务位置
-    selectLocation (index, item) {
+    selectLocation (index, item, type) {
       this.location_index = index
       this.serviceCharge = item.price * 1
       this.scope = item.type
+      if (type === 0) {
+        this.setData()
+      }
     },
     // 选择是否需要纸质报告
-    selectReport (index, item) {
+    selectReport (index, item, type) {
       this.report_index = index
       this.reportNeed = item.type
+      if (type === 0) {
+        this.setData()
+      }
     },
     // 特殊情况弹窗显示/隐藏
     showSpecailInfo () {
@@ -246,11 +258,34 @@ export default {
         }
       }
       this.specialIsshow = !this.specialIsshow
+      // 本地存储数据
+      this.setData()
+    },
+    setData () {
+      if (this.common.getStorage('orderConfirmInfo')) {
+        var orderConfirmData = this.common.getStorage('orderConfirmInfo')
+      }
+
+      orderConfirmData.orderInfo = {
+        userRemark: [], // 用户备注
+        scope: this.scope, // 服务位置 0:三环内, 1:三环外
+        reportNeed: this.reportNeed, // 纸质报告 0:不需要, 1:需要
+        notes: [], // 注意事项
+        serviceCharge: this.serviceCharge, // 服务费
+        couponPrice: 0, // 优惠金额
+        price: this.amount, // 订单金额
+        uuid: this.uuid, // 订单uuid
+        couponId: this.couponId // 优惠券uuid
+      }
+
+      orderConfirmData.orderInfo.userRemark = this.specailRecord.concat()
+      orderConfirmData.orderInfo.notes = this.notes.concat()
+      this.common.setStorage('orderConfirmInfo', orderConfirmData)
     },
     // 获取用户备注
     getRemarkList () {
       api.remark().then(res => {
-        if (res) {
+        if (res.data.code === 200) {
           let list = res.data.successObject
           for (let i in list) {
             list[i].ischecked = false
@@ -258,21 +293,23 @@ export default {
           this.remarkList = this.remarkList.concat(list)
           this.handleOrderConfirmData()
           this.deployableInit()
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 获取注意事项
     getNotes (params) {
       api.notes(JSON.stringify(params)).then(res => {
         if (res.data.code === 200) {
-          this.notes = res.data.successObject
+          this.common.toast(res.data.msg)
         } else {
           console.log('请稍后重试')
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 数据处理
@@ -282,6 +319,59 @@ export default {
         this.orderConfirmList = orderConfirmInfo.orderConfirmList
         this.totalPrice = orderConfirmInfo.totalPrice
         this.projectNumber = orderConfirmInfo.projectNumber
+
+        this.getCouponList()
+
+        if (this.$route.query.coupon_uuid) {
+          this.couponId = this.$route.query.coupon_uuid
+          this.setData()
+        } else if (orderConfirmInfo.orderInfo) {
+          this.couponId = orderConfirmInfo.orderInfo.coupon
+          this.setData()
+        }
+
+        if (orderConfirmInfo.orderInfo) {
+          let userRemark = orderConfirmInfo.orderInfo.userRemark // 用户备注
+          this.scope = orderConfirmInfo.orderInfo.scope // 服务位置 0:三环内, 1:三环外
+          this.reportNeed = orderConfirmInfo.orderInfo.reportNeed // 纸质报告 0:不需要, 1:需要
+          this.serviceCharge = orderConfirmInfo.orderInfo.serviceCharge // 服务费用
+          this.notes = orderConfirmInfo.orderInfo.notes // 注意事项
+          this.uuid = orderConfirmInfo.orderInfo.uuid // 订单uuid
+
+          this.handleUserRemark(userRemark)
+
+          // 根据scope回显服务位置
+          if (this.scope === '0') {
+            let currentLocation = {
+              'name': '三环内',
+              'price': '138.00',
+              'type': '0'
+            }
+            this.selectLocation(0, currentLocation, 1)
+          }
+
+          // 根据reportNeed回显是否需要纸质报告
+          if (this.reportNeed === '1') {
+            let currentReport = {
+              'type': '1',
+              'name': '需要'
+            }
+            this.selectReport(0, currentReport, 1)
+          }
+        }
+
+        if (orderConfirmInfo.patientInfo) {
+          this.patientInfo = orderConfirmInfo.patientInfo
+
+          // localstorage存储就医人信息和就医人列表对比
+          this.handlePatientInfo(orderConfirmInfo.patientInfo)
+        } else {
+          if (this.common.getStorage('patientInfo')) {
+            let patientInfo = this.common.getStorage('patientInfo')
+            this.handlePatientInfo(patientInfo)
+          }
+        }
+
         if (this.orderConfirmList.length > 1) {
           let uuids = []
           let type
@@ -298,64 +388,90 @@ export default {
         } else if (this.orderConfirmList.length === 1) {
           this.notes[0] = this.orderConfirmList[0].notes
         }
+      } else {
 
-        if (orderConfirmInfo.patientInfo) {
-          this.patientInfo = orderConfirmInfo.patientInfo
-        } else {
-          // 获取就医人列表
-          this.getPatientList()
+      }
+    },
+
+    // 获取优惠券列表
+    getCouponList () {
+      let projectList = []
+      for (let i in this.orderConfirmList) {
+        let info = {
+          'uuid': this.orderConfirmList[i].uuid,
+          'type': this.orderConfirmList[i].type
         }
+        projectList.push(info)
+      }
 
-        if (orderConfirmInfo.orderInfo) {
-          let userRemark = orderConfirmInfo.orderInfo.userRemark // 用户备注
-          this.scope = orderConfirmInfo.orderInfo.scope // 服务位置 0:三环内, 1:三环外
-          this.reportNeed = orderConfirmInfo.orderInfo.reportNeed // 纸质报告 0:不需要, 1:需要
-          this.serviceCharge = orderConfirmInfo.orderInfo.serviceCharge // 服务费用
-          this.notes = orderConfirmInfo.orderInfo.notes // 注意事项
-          this.projectNumber = orderConfirmInfo.orderInfo.projectCount // 项目条数
-          this.uuid = orderConfirmInfo.orderInfo.uuid // 订单uuid
+      let params = {
+        'projects': projectList
+      }
 
-          // 根据scope回显服务位置
-          if (this.scope === '0') {
-            this.selectLocation(0, {
-              'name': '三环内',
-              'price': '138.00',
-              'type': 0
-            })
-          }
-
-          if (this.reportNeed === '0') {
-            this.selectReport(0, {
-              'type': 0,
-              'name': '不需要'
-            })
-          }
-          userRemark = userRemark.split(',')
-          let userRemarkList = []
-          userRemarkList = userRemarkList.concat(userRemark)
+      this.getAvailableCoupons(JSON.stringify(params))
+    },
+    // 处理用户备注
+    handleUserRemark (userRemark) {
+      // 当用户备注为字符串时，转换为 数组
+      if (Array.isArray(userRemark)) {
+        this.specailRecord = []
+        this.specailRecord = this.specailRecord.concat(userRemark)
+      } else {
+        this.specailRecord = []
+        if (userRemark) {
+          let userRemarkList = userRemark.split(',')
           for (let i in userRemarkList) {
-            let k = i
             for (let j in this.remarkList) {
-              if (userRemarkList[k] === this.remarkList[j].content) {
+              if (userRemarkList[i] === this.remarkList[j].content) {
                 this.remarkList[j].ischecked = true
                 break
               }
             }
           }
-          for (let i in this.remarkList) {
-            if (this.remarkList[i].ischecked) {
-              this.specailRecord.push(this.remarkList[i])
+          for (let k in this.remarkList) {
+            if (this.remarkList[k].ischecked) {
+              this.specailRecord.push(this.remarkList[k])
             }
+          }
+        }
+      }
+    },
+    // 就医人数据对比
+    handlePatientInfo (patientInfo) {
+      var flag = 0
+      if (!this.patientlist.length) {
+        this.patientInfo = ''
+      } else {
+        if (!patientInfo) {
+          this.patientInfo = this.patientlist[0]
+        } else {
+          for (let i in this.patientlist) {
+            if (patientInfo.uuid === this.patientlist[i].uuid) {
+              this.patientInfo = patientInfo
+              flag = 1
+              return
+            }
+          }
+          if (flag === 0) {
+            this.patientInfo = this.patientlist[0]
           }
         }
       }
     },
     // 获取就医人列表
     getPatientList () {
-      api.patient().then(res => {
+      let params = {
+        pageNo: this.pageNo, // 当前页
+        pageSize: this.pageSize // 每页条目数
+      }
+      api.patient(params).then(res => {
         if (res.data.code === 200) {
+          // 获取用户备注列表
+          this.getRemarkList()
           if (res.data.successObject.records.length > 0) {
-            this.patientInfo = res.data.successObject.records[0]
+            this.patientlist = res.data.successObject.records
+          } else {
+            this.patientlist = []
           }
         } else {
           console.log('接口错误，请稍后重试')
@@ -380,16 +496,20 @@ export default {
       userRemark = userRemark.join()
       // 当订单uuid存在时调用“更新订单信息”接口，uuid不存在时调用“提交订单”接口
       if (!this.uuid) {
+        let couponPrice = 0
+        if (this.couponId) {
+          couponPrice = this.serviceCharge
+        }
         let params = {
           projects: projects, // 项目列表
           projectCount: projects.length, // 项目数量
           patient: this.patientInfo.uuid, // 就医人id
           scope: this.scope, // 服务位置：三环内、三环外
           userRemark: userRemark, // 用户备注
-          coupon: '', // 优惠券id
+          coupon: this.couponId, // 优惠券id
           projectPrice: this.totalPrice, // 项目金额
           servicePrice: this.serviceCharge, // 服务金额
-          couponPrice: 0, // 优惠金额
+          couponPrice: couponPrice, // 优惠金额
           price: this.amount, // 订单金额
           paperReport: this.reportNeed // 纸质报告
         }
@@ -402,21 +522,25 @@ export default {
             this.getShoppingCartTotal()
             this.getPrePay(params)
           } else {
-
+            this.common.toast(res.data.msg)
           }
         }).catch(res => {
-          console.log(res)
+          this.common.toast(res)
         })
       } else {
+        let couponPrice = 0
+        if (this.couponId) {
+          couponPrice = this.serviceCharge
+        }
         let params = {
           uuid: this.uuid,
           patient: this.patientInfo.uuid, // 就医人id
           scope: this.scope, // 服务位置：三环内、三环外
           userRemark: userRemark, // 用户备注
-          coupon: '', // 优惠券id
+          coupon: this.couponId, // 优惠券id
           projectPrice: this.totalPrice, // 项目金额
           servicePrice: this.serviceCharge, // 服务金额
-          couponPrice: 0, // 优惠金额
+          couponPrice: couponPrice, // 优惠金额
           price: this.amount, // 订单金额
           paperReport: this.reportNeed // 纸质报告
         }
@@ -428,7 +552,7 @@ export default {
             this.OrderUuidChange = res.data.successObject.uuid
             this.getPrePay(params)
           } else {
-            console.log('error')
+            this.common.toast(res.data.msg)
           }
         }).catch(res => {
           console.log(res)
@@ -441,9 +565,10 @@ export default {
         if (res.data.code === 200) {
           this.wxPay(res.data.successObject)
         } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 调用微信支付
@@ -468,9 +593,10 @@ export default {
           success: function (res) {
             console.log(res)
             if (res.errMsg === 'chooseWXPay:ok') {
-              console.log(res.err_msg)
               That.orderStatusUpdate()
-              console.log('完成')
+              // 支付成功后清楚订单、就医人信息
+              this.common.removeStorage('orderConfirmInfo')
+              this.common.removeStorage('patientInfo')
             }
           }
         })
@@ -484,25 +610,19 @@ export default {
       console.log(params)
       api.orderStatusUpdate(params).then(res => {
         if (res.data.code === 200) {
-          console.log('更新订单状态')
           this.$router.push({path: '/paysuccess', query: { uuid: this.OrderUuidChange }})
-          console.log('更新成功')
         } else {
-          console.log('请稍后重试')
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
-    ...mapActions(['getShoppingCartTotal'])
+    ...mapActions(['getShoppingCartTotal', 'getAvailableCoupons'])
   },
   created () {
-    // 获取用户备注列表
-    this.getRemarkList()
-
-    if (this.common.getStorage('patientInfo')) {
-      this.patientInfo = this.common.getStorage('patientInfo')
-    }
+    // 获取就医人列表
+    this.getPatientList()
   }
 }
 </script>
@@ -541,7 +661,7 @@ export default {
         }
       }
       i{
-        margin-left: 22px;
+        padding-left: 22px;
       }
     }
     .patient_info{

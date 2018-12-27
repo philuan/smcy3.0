@@ -15,6 +15,10 @@ const api = {
   hospitalList: () => {
     return $http.get('/rest/hospital/list')
   },
+  // 医院详情
+  hospitalInfo: (obj) => {
+    return $http.get('/rest/hospital/getByUuid', obj)
+  },
   // 首页项目
   hProjectList: () => {
     return $http.get('/rest/index/list')
@@ -68,8 +72,8 @@ const api = {
     return $http.get('rest/refreshToken')
   },
   // 获取就医人列表
-  patient: () => {
-    return $http.get('/rest/patient/list')
+  patient: (obj) => {
+    return $http.get('/rest/patient/list', obj)
   },
   // 搜索历史
   history: () => {
@@ -132,12 +136,12 @@ const api = {
     return $http.get('/rest/inform/total')
   },
   // 获取消息列表
-  messageList: () => {
-    return $http.get('/rest/inform/list')
+  messageList: (obj) => {
+    return $http.get('/rest/inform/list', obj)
   },
   // 删除消息
-  deleteMessage: () => {
-    return $http.get('/rest/inform/delete')
+  deleteMessage: (obj) => {
+    return $http.get('/rest/inform/delete', obj)
   },
   // 标记消息已读
   readMessage: () => {
@@ -148,12 +152,12 @@ const api = {
     return $http.post('/rest/appointment/add', obj)
   },
   // 判断是否弹框提示用户预约需要收费
-  isRebook: (obj) => {
-    return $http.get('/rest/appointment/isRebook', obj)
+  beforeRebook: (obj) => {
+    return $http.get('/rest/appointment/beforeRebook', obj)
   },
   // 重新预约
-  updateAppointment: (obj) => {
-    return $http.post('/rest/appointment/update', obj)
+  appointmentPrepay: (obj) => {
+    return $http.post('/rest/pay/appointmentPrepay', obj)
   },
   //  取消预约
   cancelAppointment: (obj) => {
@@ -162,6 +166,14 @@ const api = {
   // 获取三级分类项目
   projectByClassify: (obj) => {
     return $http.get('/rest/classify/projects', obj)
+  },
+  // 获取退款页面信息
+  beforeRefund: (obj) => {
+    return $http.get('/rest/order/beforeRefund', obj)
+  },
+  // 提交退款
+  submitRefund: (obj) => {
+    return $http.post('/rest/order/submitRefund', obj)
   }
 }
 export default api

@@ -55,7 +55,8 @@ import { Toast } from 'mint-ui'
 export default {
   name: 'AddPatient',
   components: {
-    Header
+    Header,
+    Toast
   },
   data () {
     return {
@@ -74,7 +75,7 @@ export default {
       selectCertificatesType: '请选择',
       addInfo: {
         name: '', // 姓名(必填)
-        sex: '', // 性别(必填)
+        sex: '男', // 性别(必填)
         age: 0, // 年龄(必填)
         phone: '', // 联系方式(必填)
         certificatesType: '身份证', // 证件类型(必填)

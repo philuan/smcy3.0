@@ -26,10 +26,13 @@ export default {
     }
   },
   mounted () {
-    if (this.$route.query.appointmentTime) {
-      console.log(this.$route.query)
+    if (this.$route.query.appointmentTime && !this.$route.query.update) {
       this.isShowAppBth = false
       this.labelCon = '预约成功'
+    }
+    if (this.$route.query.appointmentTime && this.$route.query.update) {
+      this.isShowAppBth = false
+      this.labelCon = '重新预约成功'
     }
   }
 }

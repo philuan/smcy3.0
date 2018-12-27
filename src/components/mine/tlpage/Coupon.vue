@@ -12,23 +12,24 @@
       <!--<p v-for="(item, ind) in tabData" :key="ind" @click="changeTab(ind)" :class="isSelect === ind ? 'active' : ''">{{item}}</p>-->
     <!--</div>-->
     <!--当下标不同步时，就隐藏内容-->
-    <div v-for="(item, ind) in tabList" :key="ind" :class="[isSelect !== ind ? 'hide' : '']" class="tab_list">
+    <!-- <div v-for="(item, ind) in tabList" :key="ind" :class="[isSelect !== ind ? 'hide' : '']" class="tab_list"> -->
+    <div class="tab_list">
       <ul>
-        <li v-for="(itemChild, indChild) in item.yhqList" :key="indChild">
+        <li v-for="item in AvailableCoupons" :key="item.id" @click="goRouter(item)">
           <div class="money">
             <p class="mh">
               <span class="symbol">¥</span>
-              <span>20</span>
+              <span>{{ item.couponPrice }}</span>
             </p>
             <p class="dyq">抵用券</p>
           </div>
           <div class="qm_yxq">
-            <p class="qm">{{itemChild.name}}</p>
-            <p class="describe">有效期至{{itemChild.expireTime}}</p>
-            <p class="describe">有效期至{{itemChild.yxq}}</p>
+            <p class="qm">{{item.name}}</p>
+            <p class="describe">有效期至{{item.expireTime}}</p>
+            <p class="describe">有效期至{{item.yxq}}</p>
           </div>
-          <img :src="notSelectImg" class="select_img" @click="goRouter(itemChild, indChild)">
-          <p class="syqx">使用期限：<span>{{itemChild.beginTime}} - {{itemChild.expireTime}}</span></p>
+          <img :src="notSelectImg" class="select_img">
+          <p class="syqx">使用期限：<span>{{item.beginTime}} - {{item.expireTime}}</span></p>
         </li>
       </ul>
     </div>
@@ -38,10 +39,15 @@
 <script>
 import api from '../../../utils/api'
 import Header from '../../common/Header'
+// import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 export default {
   name: 'Coupon',
   components: {
     Header
+  },
+  computed: {
+    ...mapState(['AvailableCoupons'])
   },
   data () {
     return {
@@ -51,12 +57,12 @@ export default {
       notSelectImg: require('../../../assets/not_select_img.png'),
       isSelect: 0, // tab选项默认值
       tabData: ['可使用', '不可使用'], // tab数组
-      params: '', // 调接口需要的参数
-      tabList: [
-        {
-          yhqList: []
-        }
-      ]
+      params: '' // 调接口需要的参数
+      // tabList: [
+      //   {
+      //     yhqList: []
+      //   }
+      // ]
     }
   },
   methods: {
@@ -74,30 +80,28 @@ export default {
         }
       })
     },
-    goRouter (item, ind) {
-      let info = {
-        ind: ind,
-        item: item
-      }
-      sessionStorage.setItem('yjcCouponInfo', info)
-      this.$router.push('/orderconfirm')
+    goRouter (item) {
+      // this.common.setStorage('coupon', item.uuid)
+      // this.selectCoupon()
+      this.$router.push({path: '/orderconfirm', query: { coupon_uuid: item.uuid }})
     }
-  },
-  mounted () {
-    this.params = {
-      'projects': [
-        {
-          'uuid': '1', // 项目uuid
-          'type': '0' // 项目类型(0:单项目 1:组合项目)
-        },
-        {
-          'uuid': '9',
-          'type': '1'
-        }
-      ]
-    }
-    this.getUseCoupon(this.params)
+    // ...mapMutations(['selectCoupon'])
   }
+  // mounted () {
+  //   this.params = {
+  //     'projects': [
+  //       {
+  //         'uuid': '1', // 项目uuid
+  //         'type': '0' // 项目类型(0:单项目 1:组合项目)
+  //       },
+  //       {
+  //         'uuid': '9',
+  //         'type': '1'
+  //       }
+  //     ]
+  //   }
+  //   this.getUseCoupon(this.params)
+  // }
 }
 </script>
 

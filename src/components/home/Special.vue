@@ -11,7 +11,8 @@
               <div class="price">
                 <span class="per">¥</span>
                 <span>{{ item.nowPrice }}</span>
-                <span class="per">.00</span>
+     <!--            <span>{{ item.integerPrice }}</span>
+                <span class="per">{{ item.decimalPrice }}</span> -->
               </div>
             </div>
           </li>
@@ -25,7 +26,8 @@
           <div class="price">
             <span class="per">¥</span>
             <span>{{ item.nowPrice }}</span>
-            <span class="per">.00</span>
+<!--             <span>{{ item.integerPrice }}</span>
+            <span class="per">{{ item.decimalPrice }}</span> -->
           </div>
         </div>
       </div>
@@ -48,6 +50,29 @@ export default {
       type: Object
     }
   },
+  // computed: {
+  //   list: function () {
+  //     var list = []
+  //     list = list.concat(this.packageList)
+  //     for (let i in list) {
+  //       let price = list[i].nowPrice.toString()
+  //       if (price.indexOf('.') > -1) {
+  //         list[i].integerPrice = price.substring(0, price.indexOf('.'))
+  //         if (price.substring(price.indexOf('.')).length === 3) {
+  //           list[i].decimalPrice = price.substring(price.indexOf('.'))
+  //         } else if (price.substring(price.indexOf('.')).length === 2) {
+  //           list[i].decimalPrice = price.substring(price.indexOf('.')) + '0'
+  //         } else if (price.substring(price.indexOf('.')).length === 1) {
+  //           list[i].decimalPrice = price.substring(price.indexOf('.')) + '00'
+  //         }
+  //       } else {
+  //         list[i].integerPrice = list[i].nowPrice
+  //         list[i].decimalPrice = '.00'
+  //       }
+  //     }
+  //     return list
+  //   }
+  // },
   data () {
     return {
       staticUrl: config.static_url

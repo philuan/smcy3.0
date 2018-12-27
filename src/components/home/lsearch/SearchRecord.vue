@@ -14,7 +14,7 @@
         <h4>热门搜索</h4>
       </div>
       <div class="content">
-        <div class="item" v-for="item in hotSearchList" :key="item.uuid" @click="skipToSearchResult(item)">{{ item.searchName }}</div>
+        <div class="item hot_item" v-for="item in hotSearchList" :key="item.uuid" @click="skipToSearchResult(item)">{{ item.searchName }}</div>
       </div>
     </div>
   </div>
@@ -43,8 +43,6 @@ export default {
     skipToSearchResult (item) {
       this.$router.push({name: 'SearchResult', params: { keywords_uuid: item.searchName, from: 'search' }})
     }
-  },
-  created () {
   }
 }
 </script>
@@ -86,6 +84,38 @@ export default {
         background: #f1f1f1;
         border-radius: 23px;
         margin: 10px;
+      }
+      .hot_item{
+        &:nth-child(1) {
+          background:#FFE8E8;
+        }
+        &:nth-child(2) {
+          background:#FFECFE;
+        }
+        &:nth-child(3) {
+          background:#FFF3E7;
+        }
+        &:nth-child(4) {
+          background:#EDFFE7;
+        }
+        &:nth-child(5) {
+          background:#FFFFE7;
+        }
+        &:nth-child(6) {
+          background:#F8EFFF;
+        }
+        &:nth-child(7) {
+          background:#EEEEEE;
+        }
+        &:nth-child(8) {
+          background:#FFE8E8;
+        }
+        &:nth-child(9) {
+          background:#FFECFE;
+        }
+        &:nth-child(10) {
+          background:#FFF3E7;
+        }
       }
     }
   }

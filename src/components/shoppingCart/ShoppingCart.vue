@@ -244,12 +244,14 @@ export default {
         pageSize: 10000
       }
       api.shoppingCart(params).then(res => {
-        if (res) {
+        if (res.data.code === 200) {
           // 购物车列表数据处理
           this.handleShoppingCartList(res.data.successObject.projectList)
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     handleShoppingCartList (projectList) {

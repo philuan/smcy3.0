@@ -4,15 +4,20 @@
     <div class="query_wrapper">
       <QueryCriteria  @changeCondition="handleChangeCondition" :leaf="leaf" />
     </div>
-    <panel-list v-if="projectList.length" :packageList="projectList"/>
+    <div class="projectWrapper" v-if="projectList.length"
+    v-infinite-scroll="loadMore"
+    infinite-scroll-disabled="loading"
+    infinite-scroll-distance="10">
+      <panel-list :packageList="projectList"/>
+    </div>
     <div class="no_message" v-else>
       <img src="@/assets/home_img/no_message.png">
       <p>暂无项目信息~</p>
     </div>
+    <p v-if="noMore" class="noMore">没有更多数据了~</p>
   </div>
 </template>
 <script>
-// import { mapState } from 'vuex'
 import api from '../../utils/api'
 import HeaderCom from '../../core/HeaderCom.vue'
 import QueryCriteria from '../../core/QueryCriteria.vue'
@@ -25,9 +30,6 @@ export default {
     PanelList,
     HeaderCom
   },
-  // computed: {
-  //   ...mapState(['hospitalList'])
-  // },
   data () {
     return {
       projectList: [],
@@ -36,12 +38,13 @@ export default {
       field: 'now_price',
       type: 0,
       leaf: this.$route.params.leaf,
-      pageNo: 1,
+      pageNo: 0,
       pageSize: 10,
       pageIndex: 1,
       totalPages: '',
       title: this.$route.params.name,
-      hospitalList: this.common.getStorage('hospitalList')
+      hospitalList: this.common.getStorage('hospitalList'),
+      noMore: 0
     }
   },
   methods: {
@@ -54,6 +57,8 @@ export default {
       if (this.leaf === 1) {
         this.type = 1
       }
+      this.loading = true
+
       var params = {
         classify: this.$route.params.id, // 分类id
         order: this.order, // 价格排序，asc:正序、desc倒序
@@ -68,10 +73,14 @@ export default {
           this.handleProjectData(res.data.successObject.records)
           this.totalPages = res.data.successObject.pages
         } else if (res.data.code === 204) {
-          this.projectList = []
+          if (this.pageNo === 1) {
+            this.projectList = []
+          }
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 匹配医院名称、logo
@@ -86,6 +95,7 @@ export default {
         }
       }
       this.projectList = this.projectList.concat(projectList)
+      this.loading = false
     },
     // 条件： 价格/项目类型/医院改变时，获取数据
     handleChangeCondition (order, projectType, hospitalId) {
@@ -94,25 +104,21 @@ export default {
       this.hospital = hospitalId
       this.projectList = []
       this.getHprojectList()
+    },
+    loadMore () {
+      this.loading = true
+      this.pageNo++
+      if (this.pageNo === 1) {
+        this.getHprojectList()
+      } else if (this.pageNo > 1 && this.totalPages >= this.pageNo) {
+        this.getHprojectList()
+      } else {
+        this.noMore = 1
+      }
     }
   },
   created () {
-    // 获取“首页更多”/“搜索关键词”项目列表
-    this.getHprojectList()
-  },
-  mounted () {
-    var that = this
-    // 注册touchmove事件并监听
-    window.addEventListener('touchmove', function () {
-      if (that.pageNo < that.totalPages) {
-        that.pageNo++
-        console.log(that.pageIndex)
-        that.getHprojectList()
-      } else {
-        //  显示
-        that.noData = true
-      }
-    })
+    this.loadMore()
   }
 }
 </script>
@@ -133,6 +139,11 @@ export default {
         width: 100%;
         text-align: center;
       }
+    }
+    .noMore{
+      font-size: 22px;
+      color: #aaa;
+      margin: 30px auto;
     }
   }
 </style>

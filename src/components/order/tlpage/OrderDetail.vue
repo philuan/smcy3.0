@@ -142,7 +142,8 @@ export default {
             serviceCharge: res.data.successObject.order.servicePrice, // 服务费
             couponPrice: res.data.successObject.order.couponPrice, // 优惠金额
             price: res.data.successObject.order.price, // 订单金额
-            uuid: res.data.successObject.order.uuid // 订单uuid
+            uuid: res.data.successObject.order.uuid, // 订单uuid
+            coupon: res.data.successObject.order.coupon // 优惠券id
           }
           let orderConfirmInfo = {
             'totalPrice': res.data.successObject.order.projectPrice, // 项目金额

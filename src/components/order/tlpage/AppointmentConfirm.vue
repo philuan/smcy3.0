@@ -17,7 +17,7 @@
     <div class="info">
       <div class="order_num">
         <p>订单号：</p>
-        <p>{{order.uuid}}</p>
+        <p>{{order.orderNo}}</p>
       </div>
       <div class="pro_info">
         <p class="tit">项目信息:</p>
@@ -59,24 +59,12 @@
       </div>
     </div>
     <div class="footer">
-      <button class="refund" @click="goRefund" v-show="!isShowBuy">退款</button>
-      <button class="confirm" @click="goAppointment" v-show="isAlreadAppoint && !isShowBuy">去预约</button>
-      <button class="cancel" @click="cancel" v-show="!isAlreadAppoint && !isShowBuy">取消预约</button>
-      <button class="again" @click="again" v-show="!isAlreadAppoint && !isShowBuy">重新预约</button>
+      <!--<button class="refund" @click="goRefund" v-show="!isShowBuy">退款</button>-->
+      <button class="cancel" @click="cancel" v-show="isShowRefund">申请退款</button>
+      <button class="confirm" @click="goAppointment" v-show="isAlreadAppoint">去预约</button>
+      <button class="again" @click="again" v-show="!isAlreadAppoint">重新预约</button>
       <img :src="delIcon" class="del_appoint" v-show="isShowBuy">
       <button class="again_buy" v-show="isShowBuy">再次购买</button>
-    </div>
-    <div class="modal" v-show="isShowModal">
-      <div class="inner">
-        <span class="modal_close" @click="close">X</span>
-        <p class="inner_tit">确定取消续约？</p>
-        <p class="inner_con">您好！由于您已经超过《服务须知》中免费取约规定时间段，所以进行此次操作需要支付额外的违约费用。</p>
-        <p class="money">¥ 602</p>
-        <div class="inner_btn">
-          <button @click="cancelConfirm">确定</button>
-          <button class="again_appoint" @click="again">重新预约</button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -98,18 +86,20 @@ export default {
       isAlreadAppoint: true, // 判断显示按钮是重新预约还是立即预约
       isShowModal: false, // 重新预约缴费提醒
       isShowBuy: false, // 是否显示再次购买按钮
+      isShowRefund: false, // 是否显示申请退款
       delIcon: require('../../../assets/del.png'),
       identifyIcon: require('../../../assets/identity.png'),
       order: {},
       patient: {},
       projectList: {},
-      paperReport: '需要' // 需不需要纸质报告，0代表不需要，1代表需要
+      paperReport: '需要', // 需不需要纸质报告，0代表不需要，1代表需要
+      hospitalList: this.common.getStorage('hospitalList') // 医院列表
     }
   },
   methods: {
     // 跳转到预约页面
     goAppointment () {
-      this.$router.push({path: '/immediaterreservation', query: {appointment: this.$route.query.uuid}})
+      this.$router.push({path: '/immediaterreservation', query: {uuid: this.$route.query.uuid}})
     },
     // 退款
     goRefund () {
@@ -132,6 +122,7 @@ export default {
           } else if (order.paperReport === '1') {
             this.paperReport = '需要'
           }
+          console.log(this.hospitalList)
           sessionStorage.setItem('projectList', JSON.stringify(this.projectList))
         }
         console.log(this.order)
@@ -143,7 +134,7 @@ export default {
         uuid: this.order.appointment
       }
       console.log(params.uuid)
-      api.isRebook(params).then(res => {
+      /* api.isRebook(params).then(res => {
         console.log(res)
         if (res.data.code === 200) {
           if (res.data.successObject.isRebook) {
@@ -162,8 +153,14 @@ export default {
             })
           }
         }
-      })
+      }) */
       // this.isShowModal = true
+      let refundInfo = {
+        order: this.order,
+        projectList: this.projectList
+      }
+      sessionStorage.setItem('refundInfo', JSON.stringify(refundInfo))
+      this.$router.push({path: '/refund', query: {uuid: this.$route.query.uuid}})
     },
     // cancelConfirm 确认取消预约
     cancelConfirm () {
@@ -190,27 +187,11 @@ export default {
       })
     },
     again () {
-      console.log('重新预约功能敬请期待')
       let params = {
-        uuid: this.order.appointment
+        uuid: this.$route.query.uuid
       }
-      console.log(params.uuid)
-      // 重新预约或者取消的时候判断需不需要收费
-      api.isRebook(params).then(res => {
-        console.log(res)
-        if (res.data.code === 200) {
-          if (res.data.successObject.isRebook) {
-            // 暂时逻辑都直接跳转页面
-            this.$router.push({path: '/immediaterreservation', query: {appointment: this.order.appointment, appointmentTime: true}})
-            // this.$router.push({path: '/immediaterreservation', query: { appointmentTime: true }})
-          } else {
-            this.$router.push({path: '/immediaterreservation', query: {appointment: this.order.appointment, appointmentTime: true}})
-          }
-        }
-      })
-    },
-    close () {
-      this.isShowModal = false
+      // 暂时逻辑都直接跳转页面
+      this.$router.push({path: '/immediaterreservation', query: {uuid: params.uuid, appointmentTime: true}})
     }
   },
   mounted () {
@@ -219,8 +200,10 @@ export default {
     let status = this.$route.query.status
     if (parseInt(status) === 2) {
       this.isAlreadAppoint = true
+      this.isShowRefund = true
     } else if (parseInt(status) === 3) {
       this.isAlreadAppoint = false
+      this.isShowRefund = true
     }
     // 预约成功0，取消预约1，改约成功2
     // let appointStatus = sessionStorage.getItem('appointStatus')
@@ -424,74 +407,8 @@ export default {
       .again, .again_buy{
         margin-right: 20px;
       }
-    }
-    .modal{
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, .5);
-      .inner{
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width:460px;
-        height:460px;
-        background:rgba(255,255,255,1);
-        border-radius:10px;
-        .modal_close{
-          position: absolute;
-          font-size: 24px;
-          right: 20px;
-          top: 20px;
-        }
-        .inner_tit{
-          margin-top: 50px;
-          width:100%;
-          font-size:28px;
-          line-height: 36px;
-          font-weight:400;
-          color:rgba(119,119,119,1);
-        }
-        .inner_con{
-          width: 370px;
-          margin: 20px auto;
-          line-height: 40px;
-          font-size: 24px;
-          color: #777;
-          text-align: left;
-        }
-        .money{
-          width: 100%;
-          font-size:32px;
-          font-family:SourceHanSansCN-Medium;
-          font-weight:500;
-          color:rgba(255,192,0,1);
-        }
-        .inner_btn{
-          width: 100%;
-          height: 60px;
-          display: flex;
-          margin-top: 39px;
-          justify-content: space-around;
-          align-items: center;
-          button{
-            width:150px;
-            height:60px;
-            border:2px solid rgba(170,170,170,1);
-            opacity:0.9;
-            border-radius:30px;
-            font-size:26px;
-            color:rgba(119,119,119,1);
-          }
-          .again_appoint{
-            border:2px solid rgba(31,176,231,1);
-            color:rgba(31,176,231,1);
-          }
-        }
+      .cancel{
+        margin-left: auto;
       }
     }
   }

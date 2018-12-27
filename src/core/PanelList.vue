@@ -1,6 +1,6 @@
 <template>
   <div class="panel_list">
-    <div class="item" v-for="item in packageList" :key="item.id">
+    <div class="item" v-for="item in packageList" :key="item.uuid">
       <router-link tag="div" class="hospital" :to="'/hospital/' + item.h_name">
         <img v-lazy="staticUrl + item.hospitalLogo">
         <p>{{ item.hospitalName }}</p>
@@ -10,7 +10,7 @@
       <div class="price">
         <span class="per">¥</span>
         <span>{{ item.nowPrice }}</span>
-        <span class="per">.00</span>
+<!--         <span class="per">.00</span> -->
       </div>
       <div class="cart_wrapper" @click.stop="handleCartClick(item)">
         <div class="cart_btn"></div>
@@ -55,7 +55,6 @@ export default {
 .panel_list{
     overflow: hidden;
     padding: 0 30px;
-    margin-bottom: 100px;
     text-align: left;
     .item{
       position: relative;

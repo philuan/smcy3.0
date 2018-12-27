@@ -31,7 +31,7 @@ export default {
   methods: {
     skipToProjectList () {
       this.$router.push({name: 'ProjectList',
-        params: { id: this.moreInfo.id, name: this.moreInfo.name, leaf: this.moreInfo.leaf }
+        params: { id: this.moreInfo.uuid, name: this.moreInfo.name, leaf: this.moreInfo.leaf }
       })
     }
   }

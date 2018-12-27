@@ -4,7 +4,7 @@
       <swiper>
         <swiper-slide v-for="(page,index) in pages" :key="index">
           <div class="item" v-for="item in page" :key="item.img">
-            <router-link :to="'/hospital/' + item.id">
+            <router-link :to="'/hospital/' + item.uuid">
               <img v-lazy="staticUrl + item.logo" :alt="item.title">
               <h4>{{ item.name }}</h4>
             </router-link>

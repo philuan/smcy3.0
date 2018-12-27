@@ -39,6 +39,7 @@ const Help = () => import('@/components/mine/tlpage/Help')
 const Coupon = () => import('@/components/mine/tlpage/Coupon')
 const MyFollow = () => import('@/components/mine/tlpage/MyFollow')
 const AddPatient = () => import('@/components/mine/tlpage/AddPatient')
+const Refund = () => import('@/components/mine/tlpage/Refund')
 Vue.use(Router)
 // meta下边的roleCode通过状态值跟后端匹配，判断用户访问权限, 暂时权限code对应信息还没定
 export default new Router({
@@ -233,6 +234,14 @@ export default new Router({
       }
     },
     {
+      path: '/refund',
+      name: 'Refund',
+      component: Refund,
+      meta: {
+        roleCode: 1
+      }
+    },
+    {
       path: '/message',
       name: 'Message',
       component: Message,
@@ -257,7 +266,7 @@ export default new Router({
       }
     },
     {
-      path: '/hospital/:id',
+      path: '/hospital/:uuid',
       name: 'Hospital',
       component: Hospital,
       meta: {

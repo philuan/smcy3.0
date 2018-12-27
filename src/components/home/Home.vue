@@ -60,35 +60,41 @@ export default {
   methods: {
     getSlider () {
       api.hSlider().then(res => {
-        if (res) {
+        if (res.data.code === 200) {
           this.sliderList = res.data.successObject.records
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     getHospitalList () {
       api.hospitalList().then(res => {
-        if (res) {
+        if (res.data.code === 200) {
           this.hospitalList = res.data.successObject.records
           this.common.setStorage('hospitalList', res.data.successObject.records)
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     getAdv () {
       api.adv().then(res => {
-        if (res) {
+        if (res.data.code === 200) {
           this.advObj = res.data.successObject
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     getHprojectList () {
       api.hProjectList().then(res => {
-        if (res) {
+        if (res.data.code === 200) {
           let list = res.data.successObject
           for (let i in list) {
             this.handleProjectData(list[i].projectList)
@@ -101,9 +107,11 @@ export default {
           this.specialInfo = list[2].classifyHome
           this.routineList = list[3].projectList
           this.routine = list[3].classifyHome
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 匹配医院名称、logo
@@ -125,9 +133,11 @@ export default {
           if (res.data.successObject > 0) {
             this.messageShow = true
           }
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 获取购物车商品数量
@@ -170,6 +180,10 @@ export default {
       width: 100%;
       height: 0;
       padding-bottom: 34.6%;
+      margin-top: 88px;
+    }
+    .panel_list{
+      margin-bottom: 110px;
     }
   }
 </style>

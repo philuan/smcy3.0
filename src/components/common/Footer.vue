@@ -101,7 +101,7 @@ export default {
     left: 0;
     padding-top: 15px;
     box-shadow:0px -2px 3px 0px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
+    z-index: 99;
     .footer_column{
       width: 100%;
       height: 100%;

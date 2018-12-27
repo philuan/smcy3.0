@@ -2,11 +2,17 @@
   <div class="search_result">
     <search-header @backPage="back" :keyWords="keyWords" @change="handlekeyWordsChange"></search-header>
     <QueryCriteria @changeCondition="handleChangeCondition" />
-    <panel-list v-if="KeywordsResultList.length" :packageList="KeywordsResultList"/>
+    <div class="projectWrapper" v-if="KeywordsResultList.length"
+      v-infinite-scroll="loadMore"
+      infinite-scroll-disabled="loading"
+      infinite-scroll-distance="10">
+      <panel-list :packageList="KeywordsResultList"/>
+    </div>
     <div class="no_message" v-else>
       <img src="@/assets/home_img/no_message.png">
       <p>暂无项目信息~</p>
     </div>
+    <p v-if="noMore" class="noMore">没有更多数据了~</p>
   </div>
 </template>
 <script>
@@ -30,11 +36,14 @@ export default {
       hospital: '',
       field: 'now_price',
       type: 0,
-      pageNo: 1,
+      pageNo: 0,
       pageSize: 10,
+      totalPages: '',
       keyWords: '',
       classify: '',
-      hospitalList: this.common.getStorage('hospitalList')
+      hospitalList: this.common.getStorage('hospitalList'),
+      isloading: true,
+      noMore: 0
     }
   },
   methods: {
@@ -55,11 +64,14 @@ export default {
       api.KeywordsResult(params).then(res => {
         if (res.data.code === 200) {
           this.handleKeywordsData(res.data.successObject.records)
+          this.totalPages = res.data.successObject.pages
         } else if (res.data.code === 204) {
           this.KeywordsResultList = []
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     // 条件： 价格/项目类型/医院改变时，获取数据
@@ -69,6 +81,7 @@ export default {
       this.hospital = hospitalId
       this.KeywordsResultList = []
       this.pageNo = 1
+      this.noMore = 0
       if (this.$route.params.from === 'search') {
         this.getKeywordsResult()
       } else if (this.$route.params.from === 'classify') {
@@ -76,11 +89,11 @@ export default {
       }
     },
     handlekeyWordsChange (key) {
-      this.pageNo = 1
       this.keywords = key
       this.getKeywordsResult()
     },
     getProjectByClassify () {
+      this.loading = true
       let params = {
         classify: this.classify, // 分类uuid
         type: this.type, // 项目类型，0：单项目，1：组合项目
@@ -93,11 +106,14 @@ export default {
       api.projectByClassify(params).then(res => {
         if (res.data.code === 200) {
           this.handleKeywordsData(res.data.successObject.records)
+          this.totalPages = res.data.successObject.pages
         } else if (res.data.code === 204) {
           this.KeywordsResultList = []
+        } else {
+          this.common.toast(res.data.msg)
         }
       }).catch(res => {
-        console.log(res)
+        this.common.toast(res)
       })
     },
     handleClassifyChange (key) {
@@ -105,7 +121,6 @@ export default {
       this.getProjectByClassify()
     },
     handleKeywordsData (projectList) {
-      this.KeywordsResultList = []
       // 根据医院id匹配医院名称和logo
       for (let i in projectList) {
         for (let j in this.hospitalList) {
@@ -117,38 +132,36 @@ export default {
         }
       }
       this.KeywordsResultList = this.KeywordsResultList.concat(projectList)
-      console.log(this.KeywordsResultList)
+      this.loading = false
+    },
+    loadMore () {
+      this.loading = true
+      this.pageNo++
+      if (this.$route.params.from === 'search') {
+        this.keyWords = this.$route.params.keywords_uuid
+        // 获取关键词搜索项目列表
+        if (this.pageNo === 1) {
+          this.handlekeyWordsChange(this.$route.params.keywords_uuid)
+        } else if (this.pageNo > 1 && this.totalPages >= this.pageNo) {
+          this.handlekeyWordsChange(this.$route.params.keywords_uuid)
+        } else {
+          this.noMore = 1
+        }
+      } else if (this.$route.params.from === 'classify') {
+        this.classify = this.$route.params.keywords_uuid
+        // 获取三级分类项目列表
+        if (this.pageNo === 1) {
+          this.handleClassifyChange(this.$route.params.keywords_uuid)
+        } else if (this.pageNo > 1 && this.totalPages >= this.pageNo) {
+          this.handleClassifyChange(this.$route.params.keywords_uuid)
+        } else {
+          this.noMore = 1
+        }
+      }
     }
   },
   created () {
-    if (this.$route.params.from === 'search') {
-      this.keyWords = this.$route.params.keywords_uuid
-      // 获取关键词搜索项目列表
-      this.handlekeyWordsChange(this.$route.params.keywords_uuid)
-    } else if (this.$route.params.from === 'classify') {
-      this.classify = this.$route.params.keywords_uuid
-      // 获取三级分类项目列表
-      this.handleClassifyChange(this.$route.params.keywords_uuid)
-    }
-  },
-  mounted () {
-    var that = this
-    // 注册touchmove事件并监听
-    window.addEventListener('touchmove', function () {
-      console.log(123)
-      if (that.pageNo < that.totalPages) {
-        that.pageNo++
-        console.log(that.pageIndex)
-        if (this.$route.params.from === 'search') {
-          this.getKeywordsResult()
-        } else if (this.$route.params.from === 'classify') {
-          this.getProjectByClassify()
-        }
-      } else {
-        //  显示
-        that.noData = true
-      }
-    })
+    this.loadMore()
   }
 }
 
@@ -171,6 +184,11 @@ export default {
         width: 100%;
         text-align: center;
       }
+    }
+    .noMore{
+      font-size: 22px;
+      color: #aaa;
+      margin: 30px auto;
     }
   }
 </style>

@@ -6,22 +6,22 @@
     </div>
     <div class="hospital_des">
       <div class="basic_info">
-        <img class="logo" src="@/assets/home_img/h_xijing.png">
+        <img class="logo" :src="staticUrl + hospitalInfo.logo">
         <div class="label_box">
-          <span>三级甲等</span>
-          <span>公立/综合医院</span>
+          <span>{{ hospitalInfo.remark }}</span>
+          <span>{{ hospitalInfo.remark1 }}</span>
         </div>
       </div>
       <div class="hot_info">
         <p>关注排名：陕西<span>第一名</span></p>
-        <p>累计访问：<span>32606</span>万次</p>
+        <p>累计访问：<span>{{hospitalInfo.visitCount }}</span>次</p>
         <p>两年好评率：<span>96%</span></p>
       </div>
       <div class="detail_info">
         <div class="item">
-          <p class="introduction"><i class="iconfont">&#xe6df;</i>简介：西京医院坐落于美丽的古城西安，为第四军医大学第西京医院坐落于美丽的古城西安，为第四军医大</p>
-          <p class="address"><i class="iconfont">&#xe6d1;</i>地址：陕西省西安市长乐西路15号</p>
-          <p class="phone"><i class="iconfont">&#xe621;</i>联系方式：029-93215321 029-84774114（总机）
+          <p class="introduction"><i class="iconfont">&#xe6df;</i>简介：{{ hospitalInfo.description }}</p>
+          <p class="address"><i class="iconfont">&#xe6d1;</i>地址：{{ hospitalInfo.address }}</p>
+          <p class="phone"><i class="iconfont">&#xe621;</i>联系方式：{{ hospitalInfo.tel }}
           </p>
         </div>
       </div>
@@ -95,6 +95,8 @@
 </template>
 <script>
 import PanelList from '../../../core/PanelList.vue'
+import api from '../../../utils/api'
+import {config} from '../../../config/config'
 export default {
   name: '',
   props: [],
@@ -156,7 +158,9 @@ export default {
         }
       ],
       show: false,
-      cNum: ''
+      cNum: '',
+      staticUrl: config.static_url,
+      hospitalInfo: '' // 医院信息
     }
   },
   methods: {
@@ -169,7 +173,24 @@ export default {
     changeCategory (id, index) {
       this.show = false
       this.cNum = index
+    },
+    getHospitalInfo () {
+      let params = {
+        uuid: this.$route.params.uuid
+      }
+      api.hospitalInfo(params).then(res => {
+        if (res.data.code === 200) {
+          this.hospitalInfo = res.data.successObject
+        } else {
+          this.common.toast(res.data.msg)
+        }
+      }).catch(res => {
+        this.common.toast(res)
+      })
     }
+  },
+  created () {
+    this.getHospitalInfo()
   }
 }
 </script>
@@ -255,6 +276,11 @@ export default {
             }
           p{
             line-height: 62px;
+          }
+          .introduction{
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
           }
         }
       }

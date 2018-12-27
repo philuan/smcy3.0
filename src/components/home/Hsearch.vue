@@ -35,7 +35,11 @@ export default {
   @import "@/css/element.scss";
   .search{
     @include list(row);
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
     min-height: 88px;
     width: 100%;
     background: #fff;

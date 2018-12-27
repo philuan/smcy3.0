@@ -46,14 +46,14 @@
     <div class="hospital_name">
       <div class="name">
         <img :src="hospitalImg" alt="">
-        <p>西安交通大学第一附属医院</p>
+        <p ref="hospital"></p>
       </div>
-      <div class="entry_hospital">
-        <p>进入医院</p>
-        <img :src="blueIcon" alt="">
-      </div>
+      <!--<div class="entry_hospital">-->
+        <!--<p>进入医院</p>-->
+        <!--<img :src="blueIcon" alt="">-->
+      <!--</div>-->
     </div>
-    <!--评论区域-->
+    <!--评论区域
     <div class="comment">
       <div class="comment_header">
         <p class="comment_header_l">评论(1256)</p>
@@ -84,7 +84,7 @@
           </swiper-slide>
         </swiper>
       </div>
-    </div>
+    </div>-->
     <!--相关推荐
     <div class="recommend">
       <p class="recommend_tit">相关推荐</p>
@@ -139,7 +139,7 @@ export default {
   },
   data () {
     return {
-      swiperCommentOption: { // swiper3
+      /* swiperCommentOption: { // swiper3
         autoplay: false,
         initialSlide: 0,
         slidesPerView: 1.4,
@@ -150,10 +150,12 @@ export default {
         initialSlide: 0,
         slidesPerView: 2.8,
         speed: 1000
-      },
+      }, */
       staticUrl: config.static_url,
       tabData: ['项目介绍', '流程服务', '注意事项'], // tab数组
-      successObject: {}, // 从后台传过来的数据
+      successObject: {
+        hospital: ''
+      }, // 从后台传过来的数据
       tabImgs: [
         {
           src: '../../../../static/images/xmjs.png'
@@ -204,6 +206,7 @@ export default {
       rightIcon: require('@/assets/right_icon.png'),
       ballIcon: require('../../../assets/classification/201811211209.png'),
       rate: require('../../../assets/rate_select.png'),
+      hospitalList: this.common.getStorage('hospitalList'), // 医院数据对比表
       items: [
         {
         },
@@ -216,13 +219,15 @@ export default {
       orderConfirmList: []
     }
   },
+  created () {
+    console.log(this.hospitalList)
+  },
   methods: {
     changeTab (ind) {
       this.isSelect = ind
     },
     getProjectDetail () {
       let obj = this.$route.params
-      console.log(obj)
       api.getProjectDetail(obj).then(res => {
         if (res.data.code === 200) {
           let { successObject } = res.data
@@ -239,6 +244,11 @@ export default {
           this.tabImgs[0].src = this.staticUrl + successObject.image1
           this.tabImgs[1].src = this.staticUrl + successObject.image2
           this.tabImgs[2].src = this.staticUrl + successObject.image3
+          for (let i = 0; i <= this.hospitalList.length; i++) {
+            if (parseInt(this.successObject.hospital) === parseInt(this.hospitalList[i].uuid)) {
+              this.$refs.hospital.innerHTML = this.hospitalList[i].name
+            }
+          }
         }
       }).catch(res => {
       })
@@ -425,6 +435,8 @@ export default {
         p{
           color: #444444;
           font-size: $font28;
+          margin-left: 20px;
+          margin-right: auto;
         }
       }
       .entry_hospital{

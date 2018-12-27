@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <loading v-show="fetchLoading"></loading>
     <keep-alive>
      <router-view v-if="$route.meta.keepAlive"></router-view>
     </keep-alive>
@@ -10,10 +11,16 @@
 
 <script>
 import Footer from '@/components/common/Footer'
+import { mapState } from 'vuex'
+import Loading from './components/common/Loading'
 export default {
   name: 'App',
   components: {
-    Footer
+    Footer,
+    Loading
+  },
+  computed: {
+    ...mapState(['fetchLoading'])
   },
   data () {
     return {
